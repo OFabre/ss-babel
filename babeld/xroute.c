@@ -35,6 +35,7 @@ THE SOFTWARE.
 #include "babel_interface.h"
 
 static int xroute_add_new_route(unsigned char prefix[16], unsigned char plen,
+                                unsigned char src_pref[16], unsigned char src_plen,
                                 unsigned short metric, unsigned int ifindex,
                                 int proto, int send_updates);
 
@@ -51,6 +52,7 @@ babel_ipv4_route_add (struct zapi_ipv4 *api, struct prefix_ipv4 *prefix,
     inaddr_to_uchar(uchar_prefix, &prefix->prefix);
     debugf(BABEL_DEBUG_ROUTE, "Adding new ipv4 route coming from Zebra.");
     xroute_add_new_route(uchar_prefix, prefix->prefixlen + 96,
+                         NULL, 0, 
                          api->metric, ifindex, 0, 1);
     return 0;
 }
@@ -80,9 +82,9 @@ babel_ipv6_route_add (struct zapi_ipv6 *api, struct prefix_ipv6 *prefix,
     unsigned char uchar_prefix[16];
 
     in6addr_to_uchar(uchar_prefix, &prefix->prefix);
-    debugf(BABEL_DEBUG_ROUTE, "Adding new route coming from Zebra.");
-    xroute_add_new_route(uchar_prefix, prefix->prefixlen, api->metric, ifindex,
-                         0, 1);
+    debugf(BABEL_DEBUG_ROUTE, "Adding new route comming from Zebra.");
+    xroute_add_new_route(uchar_prefix, prefix->prefixlen, NULL, 0,
+                         api->metric, ifindex, 0, 1);
     return 0;
 }
 
@@ -195,6 +197,7 @@ for_all_xroutes(void (*f)(struct xroute*, void*), void *closure)
 /* add an xroute, verifying some conditions; return 0 if there is no changes */
 static int
 xroute_add_new_route(unsigned char prefix[16], unsigned char plen,
+                     unsigned char src_pref[16], unsigned char src_plen,
                      unsigned short metric, unsigned int ifindex,
                      int proto, int send_updates)
 {
@@ -210,7 +213,7 @@ xroute_add_new_route(unsigned char prefix[16], unsigned char plen,
             if(route)
                 uninstall_route(route);
             if(send_updates)
-                send_update(NULL, 0, prefix, plen);
+                send_update(NULL, 0, prefix, plen, src_pref, src_plen);
             return 1;
         }
     }

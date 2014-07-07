@@ -78,6 +78,7 @@ find_resend(int kind, const unsigned char *prefix, unsigned char plen,
 
 struct resend *
 find_request(const unsigned char *prefix, unsigned char plen,
+             const unsigned char *src_prefix, unsigned char src_plen,
              struct resend **previous_return)
 {
     return find_resend(RESEND_REQUEST, prefix, plen, previous_return);
@@ -85,6 +86,7 @@ find_request(const unsigned char *prefix, unsigned char plen,
 
 int
 record_resend(int kind, const unsigned char *prefix, unsigned char plen,
+              const unsigned char *src_pref, unsigned char src_plen,
               unsigned short seqno, const unsigned char *id,
               struct interface *ifp, int delay)
 {
@@ -92,9 +94,9 @@ record_resend(int kind, const unsigned char *prefix, unsigned char plen,
     unsigned int ifindex = ifp ? ifp->ifindex : 0;
 
     if((kind == RESEND_REQUEST &&
-        input_filter(NULL, prefix, plen, NULL, ifindex) >= INFINITY) ||
+        input_filter(NULL, prefix, plen, NULL, 0, NULL, ifindex) >= INFINITY) ||
        (kind == RESEND_UPDATE &&
-        output_filter(NULL, prefix, plen, ifindex) >= INFINITY))
+        output_filter(NULL, prefix, plen, NULL, 0, ifindex) >= INFINITY))
         return 0;
 
     if(delay >= 0xFFFF)
@@ -164,7 +166,7 @@ unsatisfied_request(const unsigned char *prefix, unsigned char plen,
 {
     struct resend *request;
 
-    request = find_request(prefix, plen, NULL);
+    request = find_request(prefix, plen, NULL, 0, NULL);
     if(request == NULL || resend_expired(request))
         return 0;
 
@@ -183,7 +185,7 @@ request_redundant(struct interface *ifp,
 {
     struct resend *request;
 
-    request = find_request(prefix, plen, NULL);
+    request = find_request(prefix, plen, NULL, 0, NULL);
     if(request == NULL || resend_expired(request))
         return 0;
 
@@ -208,12 +210,13 @@ request_redundant(struct interface *ifp,
 
 int
 satisfy_request(const unsigned char *prefix, unsigned char plen,
+                const unsigned char *src_pref, unsigned char src_plen,
                 unsigned short seqno, const unsigned char *id,
                 struct interface *ifp)
 {
     struct resend *request, *previous;
 
-    request = find_request(prefix, plen, &previous);
+    request = find_request(prefix, plen, src_pref, src_plen, &previous);
     if(request == NULL)
         return 0;
 
@@ -300,7 +303,7 @@ do_resend()
                     break;
                 case RESEND_UPDATE:
                     send_update(resend->ifp, 1,
-                                resend->prefix, resend->plen);
+                                resend->prefix, resend->plen, NULL, 0);
                     break;
                 default: abort();
                 }

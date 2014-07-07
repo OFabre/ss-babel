@@ -51,10 +51,12 @@ THE SOFTWARE.
 
 static int
 kernel_route_v4(int add, const unsigned char *pref, unsigned short plen,
+                const unsigned char *src, unsigned short src_plen,
                 const unsigned char *gate, int ifindex,
                 unsigned int metric);
 static int
 kernel_route_v6(int add, const unsigned char *pref, unsigned short plen,
+                const unsigned char *src, unsigned short src_plen,
                 const unsigned char *gate, int ifindex,
                 unsigned int metric);
 
@@ -78,6 +80,7 @@ kernel_interface_wireless(struct interface *interface)
 
 int
 kernel_route(int operation, const unsigned char *pref, unsigned short plen,
+             const unsigned char *src, unsigned short src_plen,
              const unsigned char *gate, int ifindex, unsigned int metric,
              const unsigned char *newgate, int newifindex,
              unsigned int newmetric)
@@ -103,13 +106,13 @@ kernel_route(int operation, const unsigned char *pref, unsigned short plen,
     switch (operation) {
         case ROUTE_ADD:
             return ipv4 ?
-                   kernel_route_v4(1, pref, plen, gate, ifindex, metric):
-                   kernel_route_v6(1, pref, plen, gate, ifindex, metric);
+                   kernel_route_v4(1, pref, plen, src, src_plen, gate, ifindex, metric):
+                   kernel_route_v6(1, pref, plen, src, src_plen, gate, ifindex, metric);
             break;
         case ROUTE_FLUSH:
-            return ipv4 ?
-                   kernel_route_v4(0, pref, plen, gate, ifindex, metric):
-                   kernel_route_v6(0, pref, plen, gate, ifindex, metric);
+            return src_plen ?
+                   kernel_route_v4(0, pref, plen, src, src_plen, gate, ifindex, metric):
+                   kernel_route_v6(0, pref, plen, src, src_plen, gate, ifindex, metric);
             break;
         case ROUTE_MODIFY:
             if(newmetric == metric && memcmp(newgate, gate, 16) == 0 &&
@@ -117,15 +120,15 @@ kernel_route(int operation, const unsigned char *pref, unsigned short plen,
                 return 0;
             debugf(BABEL_DEBUG_ROUTE, "Modify route: delete old; add new.");
             rc = ipv4 ?
-                kernel_route_v4(0, pref, plen, gate, ifindex, metric):
-                kernel_route_v6(0, pref, plen, gate, ifindex, metric);
+                kernel_route_v4(0, pref, plen, src, src_plen, gate, ifindex, metric):
+                kernel_route_v6(0, pref, plen, src, src_plen, gate, ifindex, metric);
 
             if (rc < 0)
                 return -1;
 
             rc = ipv4 ?
-                kernel_route_v4(1, pref, plen, newgate, newifindex, newmetric):
-                kernel_route_v6(1, pref, plen, newgate, newifindex, newmetric);
+                kernel_route_v4(1, pref, plen, src, src_plen, newgate, newifindex, newmetric):
+                kernel_route_v6(1, pref, plen, src, src_plen, newgate, newifindex, newmetric);
 
             return rc;
             break;
@@ -140,6 +143,7 @@ kernel_route(int operation, const unsigned char *pref, unsigned short plen,
 static int
 kernel_route_v4(int add,
                 const unsigned char *pref, unsigned short plen,
+                const unsigned char *src, unsigned short src_plen,
                 const unsigned char *gate, int ifindex, unsigned int metric)
 {
     struct zapi_ipv4 api;               /* quagga's communication system */
@@ -191,11 +195,13 @@ kernel_route_v4(int add,
 
 static int
 kernel_route_v6(int add, const unsigned char *pref, unsigned short plen,
+                const unsigned char *src, unsigned short src_plen,
                 const unsigned char *gate, int ifindex, unsigned int metric)
 {
     unsigned int tmp_ifindex = ifindex; /* (for typing) */
     struct zapi_ipv6 api;               /* quagga's communication system */
     struct prefix_ipv6 quagga_prefix;   /* quagga's prefix */
+    struct prefix_ipv6 source_prefix;   /* quagga's prefix */
     struct in6_addr babel_prefix_addr;  /* babeld's prefix addr */
     struct in6_addr nexthop;            /* next router to go */
     struct in6_addr *nexthop_pointer = &nexthop;
@@ -211,6 +217,13 @@ kernel_route_v6(int add, const unsigned char *pref, unsigned short plen,
     IPV6_ADDR_COPY (&quagga_prefix.prefix, &babel_prefix_addr);
     quagga_prefix.prefixlen = plen;
     apply_mask_ipv6(&quagga_prefix);
+
+    /* make source structure */
+    memset (&source_prefix, 0, sizeof(source_prefix));
+    source_prefix.family = AF_INET6;
+    IPV6_ADDR_COPY (&source_prefix.prefix, &babel_prefix_addr);
+    source_prefix.prefixlen = src_plen;
+    apply_mask_ipv6(&source_prefix);
 
     api.type  = ZEBRA_ROUTE_BABEL;
     api.flags = 0;
@@ -229,13 +242,15 @@ kernel_route_v6(int add, const unsigned char *pref, unsigned short plen,
         api.ifindex = &tmp_ifindex;
         SET_FLAG(api.message, ZAPI_MESSAGE_METRIC);
         api.metric = metric;
+        SET_FLAG(api.message, ZAPI_MESSAGE_SRCPFX);
     }
+
 
     debugf(BABEL_DEBUG_ROUTE, "%s route (ipv6) to zebra",
            add ? "adding" : "removing" );
     return zapi_ipv6_route (add ? ZEBRA_IPV6_ROUTE_ADD :
                                   ZEBRA_IPV6_ROUTE_DELETE,
-                            zclient, &quagga_prefix, NULL, &api);
+                            zclient, &quagga_prefix, &source_prefix, &api);
 }
 
 int

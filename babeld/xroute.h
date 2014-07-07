@@ -27,6 +27,8 @@ THE SOFTWARE.
 struct xroute {
     unsigned char prefix[16];
     unsigned char plen;
+    unsigned char src_pref[16];
+    unsigned char src_plen;
     unsigned short metric;
     unsigned int ifindex;
     int proto;

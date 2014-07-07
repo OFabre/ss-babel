@@ -44,9 +44,11 @@ struct resend {
 extern struct timeval resend_time;
 
 struct resend *find_request(const unsigned char *prefix, unsigned char plen,
+                            const unsigned char *src_pref, unsigned char src_plen,
                             struct resend **previous_return);
 void flush_resends(struct neighbour *neigh);
 int record_resend(int kind, const unsigned char *prefix, unsigned char plen,
+                   const unsigned char *src_pref, unsigned char src_plen,
                    unsigned short seqno, const unsigned char *id,
                    struct interface *ifp, int delay);
 int unsatisfied_request(const unsigned char *prefix, unsigned char plen,
@@ -55,6 +57,7 @@ int request_redundant(struct interface *ifp,
                       const unsigned char *prefix, unsigned char plen,
                       unsigned short seqno, const unsigned char *id);
 int satisfy_request(const unsigned char *prefix, unsigned char plen,
+                    const unsigned char *src_pref, unsigned char src_plen,
                     unsigned short seqno, const unsigned char *id,
                     struct interface *ifp);
 

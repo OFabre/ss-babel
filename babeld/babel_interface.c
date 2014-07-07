@@ -175,7 +175,7 @@ babel_interface_address_add (int cmd, struct zclient *client,
     }
 
     send_request(ifc->ifp, NULL, 0);
-    send_update(ifc->ifp, 0, NULL, 0);
+    send_update(ifc->ifp, 0, NULL, 0, NULL, 0);
 
     return 0;
 }
@@ -209,7 +209,7 @@ babel_interface_address_delete (int cmd, struct zclient *client,
     }
 
     send_request(ifc->ifp, NULL, 0);
-    send_update(ifc->ifp, 0, NULL, 0);
+    send_update(ifc->ifp, 0, NULL, 0, NULL, 0);
 
     return 0;
 }
@@ -770,7 +770,7 @@ interface_recalculate(struct interface *ifp)
            babel_ifp->ipv4 ? ", IPv4" : "");
 
     if(rc > 0)
-        send_update(ifp, 0, NULL, 0);
+        send_update(ifp, 0, NULL, 0, NULL, 0);
 
     return 1;
 }

@@ -44,7 +44,8 @@ THE SOFTWARE.
 #define MESSAGE_UPDATE 8
 #define MESSAGE_REQUEST 9
 #define MESSAGE_MH_REQUEST 10
-#define MESSAGE_MAX 10
+#define MESSAGE_UPDATE_SRC_SPECIFIC 13
+#define MESSAGE_MAX 13
 
 /* Protocol extension through sub-TLVs. */
 #define SUBTLV_PAD1 0
@@ -70,9 +71,11 @@ void send_hello_noupdate(struct interface *ifp, unsigned interval);
 void send_hello(struct interface *ifp);
 void flush_unicast(int dofree);
 void send_update(struct interface *ifp, int urgent,
-                 const unsigned char *prefix, unsigned char plen);
+                 const unsigned char *prefix, unsigned char plen,
+                 const unsigned char *src_pref, unsigned char src_plen);
 void send_update_resend(struct interface *ifp,
-                        const unsigned char *prefix, unsigned char plen);
+                        const unsigned char *prefix, unsigned char plen,
+                        const unsigned char *src_pref, unsigned char src_plen);
 void send_wildcard_retraction(struct interface *ifp);
 void update_myseqno(void);
 void send_self_update(struct interface *ifp);

@@ -368,7 +368,7 @@ babel_main_loop(struct thread *thread)
             if(timeval_compare(&babel_now, &babel_ifp->hello_timeout) >= 0)
                 send_hello(ifp);
             if(timeval_compare(&babel_now, &babel_ifp->update_timeout) >= 0)
-                send_update(ifp, 0, NULL, 0);
+                send_update(ifp, 0, NULL, 0, NULL, 0);
             if(timeval_compare(&babel_now,
                                &babel_ifp->update_flush_timeout) >= 0)
                 flushupdates(ifp);
@@ -741,6 +741,7 @@ babeld_quagga_init(void)
 int
 input_filter(const unsigned char *id,
              const unsigned char *prefix, unsigned short plen,
+             const unsigned char *src_pref, unsigned short src_plen,
              const unsigned char *neigh, unsigned int ifindex)
 {
     return babel_filter(0, prefix, plen, ifindex);
@@ -748,7 +749,7 @@ input_filter(const unsigned char *id,
 
 int
 output_filter(const unsigned char *id, const unsigned char *prefix,
-              unsigned short plen, unsigned int ifindex)
+              unsigned short plen, const unsigned char *src_pref, unsigned short src_plen, unsigned int ifindex)
 {
     return babel_filter(1, prefix, plen, ifindex);
 }

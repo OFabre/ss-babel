@@ -30,6 +30,8 @@ struct source {
     unsigned char id[8];
     unsigned char prefix[16];
     unsigned char plen;
+    unsigned char src_prefix[16];
+    unsigned char src_plen;
     unsigned short seqno;
     unsigned short metric;
     unsigned short route_count;
@@ -37,8 +39,10 @@ struct source {
 };
 
 struct source *find_source(const unsigned char *id,
-                           const unsigned char *p,
+                           const unsigned char *prefix,
                            unsigned char plen,
+                           const unsigned char *src_pref,
+                           unsigned char src_plen,
                            int create, unsigned short seqno);
 struct source *retain_source(struct source *src);
 void release_source(struct source *src);
