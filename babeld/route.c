@@ -53,16 +53,19 @@ static int two_to_the_one_over_hl = 0; /* 2^(1/hl) * 0x10000 */
 
 static int
 route_compare(const unsigned char *prefix, unsigned char plen,
-              const unsigned char *src_pref, unsigned char src_plen,
+              const unsigned char *src_prefix, unsigned char src_plen,
               struct babel_route *route)
 {
+    printf("Route_compare\n");
     int i = memcmp(prefix, route->src->prefix, 16);
     if(i != 0)
         return i;
 
-    i = memcmp(src_pref, route->src->src_pref, 16);
+    i = memcmp(src_prefix, route->src->src_prefix, 16);
     if(i != 0)
         return i;
+
+    printf("Route_compare_ok\n");
 
     if(plen < route->src->plen)
         return -1;
@@ -81,7 +84,7 @@ route_compare(const unsigned char *prefix, unsigned char plen,
 
 static int
 find_route_slot(const unsigned char *prefix, unsigned char plen,
-                const unsigned char *src_pref, unsigned char src_plen,
+                const unsigned char *src_prefix, unsigned char src_plen,
                 int *new_return)
 {
     int p, m, g, c;
@@ -96,7 +99,7 @@ find_route_slot(const unsigned char *prefix, unsigned char plen,
 
     do {
         m = (p + g) / 2;
-        c = route_compare(prefix, plen, src_pref, src_plen, routes[m]);
+        c = route_compare(prefix, plen, src_prefix, src_plen, routes[m]);
         if(c == 0)
             return m;
         else if(c < 0)
@@ -113,11 +116,11 @@ find_route_slot(const unsigned char *prefix, unsigned char plen,
 
 struct babel_route *
 find_route(const unsigned char *prefix, unsigned char plen,
-           const unsigned char *src_pref, unsigned char src_plen,
+           const unsigned char *src_prefix, unsigned char src_plen,
            struct neighbour *neigh, const unsigned char *nexthop)
 {
     struct babel_route *route;
-    int i = find_route_slot(prefix, plen, src_pref, src_plen, NULL);
+    int i = find_route_slot(prefix, plen, src_prefix, src_plen, NULL);
 
     if(i < 0)
         return NULL;
@@ -135,9 +138,11 @@ find_route(const unsigned char *prefix, unsigned char plen,
 
 struct babel_route *
 find_installed_route(const unsigned char *prefix, unsigned char plen,
-                     const unsigned char *src_pref, unsigned char src_plen)
+                     const unsigned char *src_prefix, unsigned char src_plen)
 {
-    int i = find_route_slot(prefix, plen, src_pref, src_plen, NULL);
+    int i = find_route_slot(prefix, plen, src_prefix, src_plen, NULL);
+
+    printf("i = %d\n", i);
 
     if(i >= 0 && routes[i]->installed)
         return routes[i];
@@ -181,7 +186,7 @@ insert_route(struct babel_route *route)
 
     assert(!route->installed);
 
-    i = find_route_slot(route->src->prefix, route->src->plen, route->src->src_pref, route->src->src_plen, &n);
+    i = find_route_slot(route->src->prefix, route->src->plen, route->src->src_prefix, route->src->src_plen, &n);
 
     if(i < 0) {
         if(route_slots >= max_route_slots)
@@ -222,7 +227,7 @@ flush_route(struct babel_route *route)
         lost = 1;
     }
 
-    i = find_route_slot(route->src->prefix, route->src->plen, route->src->src_pref, route->src->src_plen, NULL);
+    i = find_route_slot(route->src->prefix, route->src->plen, route->src->src_prefix, route->src->src_plen, NULL);
     assert(i >= 0 && i < route_slots);
 
     if(route == routes[i]) {
@@ -384,7 +389,7 @@ install_route(struct babel_route *route)
         zlog_err("WARNING: installing unfeasible route "
                  "(this shouldn't happen).");
 
-    i = find_route_slot(route->src->prefix, route->src->plen, route->src->src_pref, route->src->src_plen, NULL);
+    i = find_route_slot(route->src->prefix, route->src->plen, route->src->src_prefix, route->src->src_plen, NULL);
     assert(i >= 0 && i < route_slots);
 
     if(routes[i] != route && routes[i]->installed) {
@@ -462,7 +467,7 @@ switch_routes(struct babel_route *old, struct babel_route *new)
 
     old->installed = 0;
     new->installed = 1;
-    move_installed_route(new, find_route_slot(new->src->prefix, new->src->plen, new->src->src_pref, new->src->src_plen,
+    move_installed_route(new, find_route_slot(new->src->prefix, new->src->plen, new->src->src_prefix, new->src->src_plen,
                                               NULL));
 }
 
@@ -673,11 +678,11 @@ route_acceptable(struct babel_route *route, int feasible,
 
 struct babel_route *
 find_best_route(const unsigned char *prefix, unsigned char plen, 
-                const unsigned char *src_pref, unsigned char src_plen, 
+                const unsigned char *src_prefix, unsigned char src_plen, 
                 int feasible, struct neighbour *exclude)
 {
     struct babel_route *route = NULL, *r = NULL;
-    int i = find_route_slot(prefix, plen, src_pref, src_plen, NULL);
+    int i = find_route_slot(prefix, plen, src_prefix, src_plen, NULL);
 
     if(i < 0)
         return NULL;
@@ -767,7 +772,7 @@ update_interface_metric(struct interface *ifp)
 struct babel_route *
 update_route(const unsigned char *router_id,
              const unsigned char *prefix, unsigned char plen,
-             const unsigned char *src_pref, unsigned char src_plen,
+             const unsigned char *src_prefix, unsigned char src_plen,
              unsigned short seqno, unsigned short refmetric,
              unsigned short interval,
              struct neighbour *neigh, const unsigned char *nexthop,
@@ -789,18 +794,18 @@ update_route(const unsigned char *router_id,
     }
 
     add_metric = input_filter(router_id, prefix, plen,
-                              src_pref, src_plen,
+                              src_prefix, src_plen,
                               neigh->address, neigh->ifp->ifindex);
     if(add_metric >= INFINITY)
         return NULL;
 
-    route = find_route(prefix, plen, src_pref, src_plen, neigh, nexthop);
+    route = find_route(prefix, plen, src_prefix, src_plen, neigh, nexthop);
 
     if(route && memcmp(route->src->id, router_id, 8) == 0)
         /* Avoid scanning the source table. */
         src = route->src;
     else
-        src = find_source(router_id, prefix, plen, src_pref, src_plen, 1, seqno);
+        src = find_source(router_id, prefix, plen, src_prefix, src_plen, 1, seqno);
 
     if(src == NULL)
         return NULL;
