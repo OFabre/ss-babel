@@ -56,7 +56,6 @@ route_compare(const unsigned char *prefix, unsigned char plen,
               const unsigned char *src_prefix, unsigned char src_plen,
               struct babel_route *route)
 {
-    printf("Route_compare\n");
     int i = memcmp(prefix, route->src->prefix, 16);
     if(i != 0)
         return i;
@@ -64,8 +63,6 @@ route_compare(const unsigned char *prefix, unsigned char plen,
     i = memcmp(src_prefix, route->src->src_prefix, 16);
     if(i != 0)
         return i;
-
-    printf("Route_compare_ok\n");
 
     if(plen < route->src->plen)
         return -1;
@@ -141,8 +138,6 @@ find_installed_route(const unsigned char *prefix, unsigned char plen,
                      const unsigned char *src_prefix, unsigned char src_plen)
 {
     int i = find_route_slot(prefix, plen, src_prefix, src_plen, NULL);
-
-    printf("i = %d\n", i);
 
     if(i >= 0 && routes[i]->installed)
         return routes[i];
