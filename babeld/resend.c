@@ -94,9 +94,9 @@ record_resend(int kind, const unsigned char *prefix, unsigned char plen,
     unsigned int ifindex = ifp ? ifp->ifindex : 0;
 
     if((kind == RESEND_REQUEST &&
-        input_filter(NULL, prefix, plen, NULL, 0, NULL, ifindex) >= INFINITY) ||
+        input_filter(NULL, prefix, plen, zeroes, 0, NULL, ifindex) >= INFINITY) ||
        (kind == RESEND_UPDATE &&
-        output_filter(NULL, prefix, plen, NULL, 0, ifindex) >= INFINITY))
+        output_filter(NULL, prefix, plen, zeroes, 0, ifindex) >= INFINITY))
         return 0;
 
     if(delay >= 0xFFFF)
@@ -166,7 +166,7 @@ unsatisfied_request(const unsigned char *prefix, unsigned char plen,
 {
     struct resend *request;
 
-    request = find_request(prefix, plen, NULL, 0, NULL);
+    request = find_request(prefix, plen, zeroes, 0, NULL);
     if(request == NULL || resend_expired(request))
         return 0;
 
@@ -185,7 +185,7 @@ request_redundant(struct interface *ifp,
 {
     struct resend *request;
 
-    request = find_request(prefix, plen, NULL, 0, NULL);
+    request = find_request(prefix, plen, zeroes, 0, NULL);
     if(request == NULL || resend_expired(request))
         return 0;
 

@@ -229,6 +229,8 @@ kernel_route_v6(int add, const unsigned char *pref, unsigned short plen,
     api.flags = 0;
     api.message = 0;
     api.safi = SAFI_UNICAST;
+    SET_FLAG(api.message, ZAPI_MESSAGE_NEXTHOP);
+    SET_FLAG(api.message, ZAPI_MESSAGE_SRCPFX);
     if(metric >= KERNEL_INFINITY) {
         api.flags = ZEBRA_FLAG_REJECT;
         api.nexthop_num = 0;
@@ -242,7 +244,6 @@ kernel_route_v6(int add, const unsigned char *pref, unsigned short plen,
         api.ifindex = &tmp_ifindex;
         SET_FLAG(api.message, ZAPI_MESSAGE_METRIC);
         api.metric = metric;
-        SET_FLAG(api.message, ZAPI_MESSAGE_SRCPFX);
     }
 
 
