@@ -175,6 +175,7 @@ kernel_route_v4(int add,
        correctly. */
 
     SET_FLAG(api.message, ZAPI_MESSAGE_NEXTHOP);
+    SET_FLAG(api.message, ZAPI_MESSAGE_SRCPFX);
     api.ifindex_num = 0;
     if(metric >= KERNEL_INFINITY) {
         api.flags = ZEBRA_FLAG_REJECT;
