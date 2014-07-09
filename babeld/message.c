@@ -942,8 +942,10 @@ start_unicast_message(struct neighbour *neigh, int type, int len)
            MIN(UNICAST_BUFSIZE, babel_get_if_nfo(neigh->ifp)->bufsize))
             flush_unicast(0);
     }
-    if(!unicast_buffer)
+    if(!unicast_buffer) {
         unicast_buffer = malloc(UNICAST_BUFSIZE);
+        memset(unicast_buffer, 0, UNICAST_BUFSIZE);
+    }
     if(!unicast_buffer) {
         zlog_err("malloc(unicast_buffer): %s", safe_strerror(errno));
         return -1;

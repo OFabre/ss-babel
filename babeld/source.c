@@ -51,7 +51,7 @@ find_source(const unsigned char *id,
             continue;
         if(src->plen != plen)
             continue;
-        if(memcmp(src->prefix, pref, 16) == 0)
+        if(memcmp(src->prefix, pref, 16) == 0) 
             return src;
     }
 
@@ -64,6 +64,7 @@ find_source(const unsigned char *id,
         return NULL;
     }
 
+    memset(src, 0, sizeof(struct source));
     memcpy(src->id, id, 8);
     memcpy(src->prefix, pref, 16);
     src->plen = plen;

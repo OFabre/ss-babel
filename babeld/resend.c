@@ -130,6 +130,7 @@ record_resend(int kind, const unsigned char *prefix, unsigned char plen,
         resend = malloc(sizeof(struct resend));
         if(resend == NULL)
             return -1;
+        memset(resend, 0, sizeof(struct resend));
         resend->kind = kind;
         resend->max = RESEND_MAX;
         resend->delay = delay;

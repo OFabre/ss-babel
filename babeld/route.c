@@ -873,6 +873,7 @@ update_route(const unsigned char *router_id,
             return NULL;
         }
 
+        memset(route, 0, sizeof(struct babel_route));
         route->src = retain_source(src);
         route->refmetric = refmetric;
         route->cost = neighbour_cost(neigh);

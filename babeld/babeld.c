@@ -517,6 +517,7 @@ resize_receive_buffer(int size)
             zlog_err("malloc(receive_buffer): %s", safe_strerror(errno));
             return -1;
         }
+        memset(receive_buffer, 0, size);
         receive_buffer_size = size;
     } else {
         unsigned char *new;
