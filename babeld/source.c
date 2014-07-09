@@ -51,7 +51,10 @@ find_source(const unsigned char *id,
             continue;
         if(src->plen != plen)
             continue;
-        if(memcmp(src->prefix, pref, 16) == 0) 
+        if(src->src_plen != src_plen)
+            continue;
+        if(memcmp(src->prefix, pref, 16) == 0 &&
+           memcmp(src->src_pref, src_pref, 16) == 0)
             return src;
     }
 
@@ -68,6 +71,8 @@ find_source(const unsigned char *id,
     memcpy(src->id, id, 8);
     memcpy(src->prefix, pref, 16);
     src->plen = plen;
+    memcpy(src->src_pref, src_pref, 16);
+    src->src_plen = src_plen;
     src->seqno = seqno;
     src->metric = INFINITY;
     src->time = babel_now.tv_sec;
