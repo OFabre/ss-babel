@@ -110,7 +110,7 @@ kernel_route(int operation, const unsigned char *pref, unsigned short plen,
                    kernel_route_v6(1, pref, plen, src, src_plen, gate, ifindex, metric);
             break;
         case ROUTE_FLUSH:
-            return src_plen ?
+            return ipv4 ?
                    kernel_route_v4(0, pref, plen, src, src_plen, gate, ifindex, metric):
                    kernel_route_v6(0, pref, plen, src, src_plen, gate, ifindex, metric);
             break;
