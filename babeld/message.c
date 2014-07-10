@@ -1472,7 +1472,8 @@ send_update_resend(struct interface *ifp,
     assert(prefix != NULL);
 
     send_update(ifp, 1, prefix, plen, src_pref, src_plen);
-    record_resend(RESEND_UPDATE, prefix, plen, zeroes, 0, 0, 0, NULL, resend_delay);
+    record_resend(RESEND_UPDATE, prefix, plen, src_pref, src_plen, 
+                                            0, 0, NULL, resend_delay);
 }
 
 void
@@ -1810,6 +1811,7 @@ send_unicast_multihop_request(struct neighbour *neigh,
 void
 send_request_resend(struct neighbour *neigh,
                     const unsigned char *prefix, unsigned char plen,
+                    const unsigned char *src_prefix, unsigned char src_plen,
                     unsigned short seqno, unsigned char *id)
 {
     if(neigh)
@@ -1817,7 +1819,8 @@ send_request_resend(struct neighbour *neigh,
     else
         send_multihop_request(NULL, prefix, plen, seqno, id, 127);
 
-    record_resend(RESEND_REQUEST, prefix, plen, zeroes, 0, seqno, id,
+    record_resend(RESEND_REQUEST, prefix, plen, 
+                                  src_prefix, src_plen, seqno, id,
                   neigh ? neigh->ifp : NULL, resend_delay);
 }
 
