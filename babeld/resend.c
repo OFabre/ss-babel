@@ -312,7 +312,8 @@ do_resend()
                     break;
                 case RESEND_UPDATE:
                     send_update(resend->ifp, 1,
-                                resend->prefix, resend->plen, NULL, 0);
+                                resend->prefix, resend->plen, 
+                                resend->src_prefix, resend->src_plen);
                     break;
                 default: abort();
                 }
