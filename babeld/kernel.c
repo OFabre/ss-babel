@@ -210,7 +210,7 @@ kernel_route_v6(int add, const unsigned char *pref, unsigned short plen,
     /* convert to be understandable by quagga */
     /* convert given addresses */
     uchar_to_in6addr(&babel_prefix_addr, pref);
-    uchar_to_in6addr(&source_prefix_addr, pref);
+    uchar_to_in6addr(&source_prefix_addr, src);
     uchar_to_in6addr(&nexthop, gate);
 
     /* make prefix structure */
