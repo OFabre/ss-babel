@@ -1798,7 +1798,7 @@ send_unicast_request(struct neighbour *neigh,
                      const unsigned char *prefix, unsigned char plen,
                      const unsigned char *src_prefix, unsigned char src_plen)
 {
-    int rc, v4, pb, len;
+    int rc, v4, spb = 0, len;
     int is_src_specific = (prefix && src_plen != 0);
 
     /* make sure any buffered updates go out before this request. */
