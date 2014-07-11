@@ -1320,7 +1320,8 @@ flushupdates(struct interface *ifp)
 
                 if(metric < INFINITY)
                     satisfy_request(route->src->prefix, route->src->plen,
-                                    NULL, 0, seqno, route->src->id, ifp);
+                                    route->src->src_prefix, route->src->src_plen, 
+				    seqno, route->src->id, ifp);
                 if((babel_ifp->flags & BABEL_IF_SPLIT_HORIZON) &&
                    route->neigh->ifp == ifp)
                     continue;
@@ -1353,7 +1354,7 @@ flushupdates(struct interface *ifp)
             /* There's no route for this prefix.  This can happen shortly
                after an xroute has been retracted, so send a retraction. */
                 really_send_update(ifp, myid, b[i].prefix, b[i].plen,
-                                   NULL, 0,
+				   b[i].src_prefix, b[i].src_plen,
                                    myseqno, INFINITY, NULL, -1);
             }
         }
@@ -1440,8 +1441,8 @@ send_update(struct interface *ifp, int urgent,
                need to do this now. */
             route = find_installed_route(prefix, plen, src_pref, src_plen);
             if(route && route_metric(route) < INFINITY)
-                satisfy_request(prefix, plen, zeroes, 0, route->src->seqno, 
-                                route->src->id, NULL);
+                satisfy_request(prefix, plen, src_pref, src_plen, 
+				route->src->seqno, route->src->id, NULL);
         }
         return;
     }
