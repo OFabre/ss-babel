@@ -174,7 +174,7 @@ babel_interface_address_add (int cmd, struct zclient *client,
         }
     }
 
-    send_request(ifc->ifp, NULL, 0);
+    send_request(ifc->ifp, NULL, 0, NULL, 0);
     send_update(ifc->ifp, 0, NULL, 0, NULL, 0);
 
     return 0;
@@ -208,7 +208,7 @@ babel_interface_address_delete (int cmd, struct zclient *client,
         }
     }
 
-    send_request(ifc->ifp, NULL, 0);
+    send_request(ifc->ifp, NULL, 0, NULL, 0);
     send_update(ifc->ifp, 0, NULL, 0, NULL, 0);
 
     return 0;
@@ -757,7 +757,7 @@ interface_recalculate(struct interface *ifp)
     set_timeout(&babel_ifp->hello_timeout, babel_ifp->hello_interval);
     set_timeout(&babel_ifp->update_timeout, babel_ifp->update_interval);
     send_hello(ifp);
-    send_request(ifp, NULL, 0);
+    send_request(ifp, NULL, 0, NULL, 0);
 
     update_interface_metric(ifp);
 

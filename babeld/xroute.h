@@ -27,14 +27,15 @@ THE SOFTWARE.
 struct xroute {
     unsigned char prefix[16];
     unsigned char plen;
-    unsigned char src_pref[16];
+    unsigned char src_prefix[16];
     unsigned char src_plen;
     unsigned short metric;
     unsigned int ifindex;
     int proto;
 };
 
-struct xroute *find_xroute(const unsigned char *prefix, unsigned char plen);
+struct xroute *find_xroute(const unsigned char *prefix, unsigned char plen,
+			   const unsigned char *src_prefix, unsigned char src_plen);
 void flush_xroute(struct xroute *xroute);
 int babel_ipv4_route_add (struct zapi_ipv4 *api, struct prefix_ipv4 *prefix,
                           unsigned int ifindex, struct in_addr *nexthop);

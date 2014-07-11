@@ -924,6 +924,7 @@ send_unfeasible_request(struct neighbour *neigh, int force,
 
     if(force || !route || route_metric(route) >= metric + 512) {
         send_unicast_multihop_request(neigh, src->prefix, src->plen,
+				      src->src_prefix, src->src_plen,
                                       src->metric >= INFINITY ?
                                       src->seqno :
                                       seqno_plus(src->seqno, 1),
@@ -948,7 +949,8 @@ consider_route(struct babel_route *route)
     if(!route_feasible(route))
         return;
 
-    xroute = find_xroute(route->src->prefix, route->src->plen);
+    xroute = find_xroute(route->src->prefix, route->src->plen, 
+    			route->src->src_prefix, route->src->src_plen);
     if(xroute)
         return;
 
@@ -1058,7 +1060,8 @@ send_triggered_update(struct babel_route *route, struct source *oldsrc,
                                 seqno_plus(route->src->seqno, 1),
                                 route->src->id);
         } else if(newmetric >= oldmetric + 288) {
-            send_request(NULL, route->src->prefix, route->src->plen);
+            send_request(NULL, route->src->prefix, route->src->plen,
+	    			route->src->src_prefix, route->src->src_plen);
         }
     }
 }
@@ -1137,7 +1140,8 @@ expire_routes(void)
                 if(route_old(r))
                     /* Route about to expire, send a request. */
                     send_unicast_request(r->neigh,
-                                         r->src->prefix, r->src->plen);
+                                         r->src->prefix, r->src->plen,
+                                         r->src->src_prefix, r->src->src_plen);
             }
             r = r->next;
         }

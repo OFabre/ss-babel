@@ -288,7 +288,7 @@ babel_initial_noise(void)
         send_hello(ifp);
         send_wildcard_retraction(ifp);
         send_self_update(ifp);
-        send_request(ifp, NULL, 0);
+        send_request(ifp, NULL, 0, NULL, 0);
         flushupdates(ifp);
         flushbuf(ifp);
     }
