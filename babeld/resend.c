@@ -190,11 +190,12 @@ unsatisfied_request(const unsigned char *prefix, unsigned char plen,
 int
 request_redundant(struct interface *ifp,
                   const unsigned char *prefix, unsigned char plen,
+                  const unsigned char *src_prefix, unsigned char src_plen,
                   unsigned short seqno, const unsigned char *id)
 {
     struct resend *request;
 
-    request = find_request(prefix, plen, zeroes, 0, NULL);
+    request = find_request(prefix, plen, src_prefix, src_plen, NULL);
     if(request == NULL || resend_expired(request))
         return 0;
 
