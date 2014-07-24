@@ -1072,7 +1072,7 @@ void
 route_changed(struct babel_route *route,
               struct source *oldsrc, unsigned short oldmetric)
 {
-    if(route->installed) {
+    if(route->installed) 
         if(route_metric(route) > oldmetric) {
             struct babel_route *better_route;
             better_route =

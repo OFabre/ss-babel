@@ -1735,7 +1735,7 @@ send_request(struct interface *ifp,
              const unsigned char *prefix, unsigned char plen,
              const unsigned char *src_prefix, unsigned char src_plen)
 {
-    int v4, pb, len;
+    int v4, spb, pb, len;
     int is_src_specific = (prefix && src_plen != 0);
 
     if(ifp == NULL) {
@@ -1798,7 +1798,7 @@ send_unicast_request(struct neighbour *neigh,
                      const unsigned char *prefix, unsigned char plen,
                      const unsigned char *src_prefix, unsigned char src_plen)
 {
-    int rc, v4, spb = 0, len;
+    int rc, v4, spb, len, pb;
     int is_src_specific = (prefix && src_plen != 0);
 
     /* make sure any buffered updates go out before this request. */
@@ -1876,7 +1876,7 @@ send_multihop_request(struct interface *ifp,
 
     if(is_src_specific) {
         spb = v4 ? ((src_plen - 96) + 7) / 8 : (src_plen + 7) / 8;
-        len += spb + 1;
+        len += spb;
         start_message(ifp, MESSAGE_MH_REQUEST_SRC_SPECIFIC, len);
     } else {
         start_message(ifp, MESSAGE_MH_REQUEST, len);
