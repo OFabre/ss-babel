@@ -1198,7 +1198,7 @@ really_send_update(struct interface *ifp,
         return;
 
     add_metric = output_filter(id, prefix, plen, 
-                                src_prefix, src_plen, ifp->ifindex);
+                               src_prefix, src_plen, ifp->ifindex);
     if(add_metric >= INFINITY)
         return;
 
@@ -1428,7 +1428,7 @@ flushupdates(struct interface *ifp)
             /* There's no route for this prefix.  This can happen shortly
                after an xroute has been retracted, so send a retraction. */
                 really_send_update(ifp, myid, b[i].prefix, b[i].plen,
-				   b[i].src_prefix, b[i].src_plen,
+                                   b[i].src_prefix, b[i].src_plen,
                                    myseqno, INFINITY, NULL, -1);
             }
         }
