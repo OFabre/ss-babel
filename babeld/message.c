@@ -1417,7 +1417,8 @@ flushupdates(struct interface *ifp)
                 really_send_update(ifp, route->src->id,
                                    route->src->prefix,
                                    route->src->plen,
-                                   NULL, 0,
+                                   route->src->src_prefix,
+                                   route->src->src_plen,
                                    seqno, metric,
                                    channels, chlen);
                 update_source(route->src, seqno, metric);
