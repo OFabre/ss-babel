@@ -1015,6 +1015,7 @@ static void
 really_send_update(struct interface *ifp,
                    const unsigned char *id,
                    const unsigned char *prefix, unsigned char plen,
+                   const unsigned char *src_prefix, unsigned char src_plen,
                    unsigned short seqno, unsigned short metric,
                    unsigned char *channels, int channels_len)
 {
@@ -1206,6 +1207,7 @@ flushupdates(struct interface *ifp)
             if(xroute && (!route || xroute->metric <= kernel_metric)) {
                 really_send_update(ifp, myid,
                                    xroute->prefix, xroute->plen,
+                                   zeroes, 0,
                                    myseqno, xroute->metric,
                                    NULL, 0);
                 last_prefix = xroute->prefix;
@@ -1249,6 +1251,7 @@ flushupdates(struct interface *ifp)
                 really_send_update(ifp, route->src->id,
                                    route->src->prefix,
                                    route->src->plen,
+                                   zeroes, 0,
                                    seqno, metric,
                                    channels, chlen);
                 update_source(route->src, seqno, metric);
@@ -1258,7 +1261,7 @@ flushupdates(struct interface *ifp)
             /* There's no route for this prefix.  This can happen shortly
                after an xroute has been retracted, so send a retraction. */
                 really_send_update(ifp, myid, b[i].prefix, b[i].plen,
-                                   myseqno, INFINITY, NULL, -1);
+                                   zeroes, 0, myseqno, INFINITY, NULL, -1);
             }
         }
         schedule_flush_now(ifp);
