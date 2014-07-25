@@ -232,7 +232,7 @@ xroute_add_new_route(unsigned char prefix[16], unsigned char plen,
             if(route)
                 uninstall_route(route);
             if(send_updates)
-                send_update(NULL, 0, prefix, plen);
+                send_update(NULL, 0, prefix, plen, zeroes, 0);
             return 1;
         }
     }

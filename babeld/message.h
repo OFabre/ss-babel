@@ -70,7 +70,8 @@ void send_hello_noupdate(struct interface *ifp, unsigned interval);
 void send_hello(struct interface *ifp);
 void flush_unicast(int dofree);
 void send_update(struct interface *ifp, int urgent,
-                 const unsigned char *prefix, unsigned char plen);
+                 const unsigned char *prefix, unsigned char plen,
+                 const unsigned char *src_prefix, unsigned char src_plen);
 void send_update_resend(struct interface *ifp,
                         const unsigned char *prefix, unsigned char plen);
 void send_wildcard_retraction(struct interface *ifp);

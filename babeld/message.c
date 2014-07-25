@@ -580,9 +580,9 @@ parse_packet(const unsigned char *from, struct interface *ifp,
                 if(neigh_ifp->last_update_time <
                    (time_t)(babel_now.tv_sec -
                             MAX(neigh_ifp->hello_interval / 100, 1)))
-                    send_update(neigh->ifp, 0, NULL, 0);
+                    send_update(neigh->ifp, 0, NULL, 0, NULL, 0);
             } else {
-                send_update(neigh->ifp, 0, prefix, plen);
+                send_update(neigh->ifp, 0, prefix, plen, zeroes, 0);
             }
         } else if(type == MESSAGE_MH_REQUEST) {
             unsigned char prefix[16], plen;
@@ -1321,7 +1321,8 @@ buffer_update(struct interface *ifp,
 
 void
 send_update(struct interface *ifp, int urgent,
-            const unsigned char *prefix, unsigned char plen)
+            const unsigned char *prefix, unsigned char plen,
+            const unsigned char *src_prefix, unsigned char src_plen)
 {
     babel_interface_nfo *babel_ifp = NULL;
 
@@ -1330,7 +1331,7 @@ send_update(struct interface *ifp, int urgent,
       struct listnode *linklist_node = NULL;
         struct babel_route *route;
         FOR_ALL_INTERFACES(ifp_aux, linklist_node)
-            send_update(ifp_aux, urgent, prefix, plen);
+            send_update(ifp_aux, urgent, prefix, plen, zeroes, 0);
         if(prefix) {
             /* Since flushupdates only deals with non-wildcard interfaces, we
                need to do this now. */
@@ -1378,8 +1379,8 @@ send_update_resend(struct interface *ifp,
 {
     assert(prefix != NULL);
 
-    send_update(ifp, 1, prefix, plen);
-    record_resend(RESEND_UPDATE, prefix, plen, 0, NULL, NULL, resend_delay);
+    send_update(ifp, 1, prefix, plen, zeroes, 0);
+    record_resend(RESEND_UPDATE, prefix, plen, 0, 0, NULL, resend_delay);
 }
 
 void
@@ -1438,7 +1439,8 @@ send_self_update(struct interface *ifp)
         while(1) {
             struct xroute *xroute = xroute_stream_next(xroutes);
             if(xroute == NULL) break;
-            send_update(ifp, 0, xroute->prefix, xroute->plen);
+            send_update(ifp, 0, xroute->prefix, xroute->plen,
+                        zeroes, 0);
         }
         xroute_stream_done(xroutes);
     } else {
@@ -1754,14 +1756,14 @@ handle_request(struct neighbour *neigh, const unsigned char *prefix,
                 update_myseqno();
             }
         }
-        send_update(neigh->ifp, 1, prefix, plen);
+        send_update(neigh->ifp, 1, prefix, plen, zeroes, 0);
         return;
     }
 
     if(route &&
        (memcmp(id, route->src->id, 8) != 0 ||
         seqno_compare(seqno, route->seqno) <= 0)) {
-        send_update(neigh->ifp, 1, prefix, plen);
+        send_update(neigh->ifp, 1, prefix, plen, zeroes, 0);
         return;
     }
 
