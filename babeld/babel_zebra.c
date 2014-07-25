@@ -113,7 +113,6 @@ babel_zebra_read_ipv6 (int command, struct zclient *zclient,
     memset (&src_p, 0, sizeof (struct prefix_ipv6));
     src_p.family = AF_INET6;
     if (CHECK_FLAG (api.message, ZAPI_MESSAGE_SRCPFX)) {
-        src_p.family = AF_INET6;
         src_p.prefixlen = stream_getc (s);
         stream_get (&src_p.prefix, s, PSIZE (src_p.prefixlen));
     }
