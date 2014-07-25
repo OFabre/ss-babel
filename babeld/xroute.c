@@ -171,23 +171,22 @@ add_xroute(unsigned char prefix[16], unsigned char plen,
         int n = maxxroutes < 1 ? 8 : 2 * maxxroutes;
         if(xroutes == NULL) {
             new_xroutes = malloc(n * sizeof(struct xroute));
-            memset(new_xroutes, 0, n * sizeof(struct xroute));
         }
         else {
             new_xroutes = realloc(xroutes, n * sizeof(struct xroute));
         }
         if(new_xroutes == NULL)
             return -1;
+        memset(new_xroutes, 0, n * sizeof(struct xroute));
         maxxroutes = n;
         xroutes = new_xroutes;
     }
 
     memcpy(xroutes[numxroutes].prefix, prefix, 16);
     xroutes[numxroutes].plen = plen;
-    if(src_plen != 0 && src_prefix != NULL) {
-      memcpy(xroutes[numxroutes].src_prefix, src_prefix, 16);
-      xroutes[numxroutes].src_plen = src_plen;
-    }
+    xroutes[numxroutes].src_plen = src_plen;
+    if(src_plen != 0 && src_prefix != NULL)
+        memcpy(xroutes[numxroutes].src_prefix, src_prefix, 16);
     xroutes[numxroutes].metric = metric;
     xroutes[numxroutes].ifindex = ifindex;
     xroutes[numxroutes].proto = proto;
