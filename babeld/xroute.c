@@ -155,9 +155,10 @@ flush_xroute(struct xroute *xroute)
 
 static int
 add_xroute(unsigned char prefix[16], unsigned char plen,
+           unsigned char src_prefix[16], unsigned char src_plen,
            unsigned short metric, unsigned int ifindex, int proto)
 {
-    struct xroute *xroute = find_xroute(prefix, plen, zeroes, 0);
+    struct xroute *xroute = find_xroute(prefix, plen, src_prefix, src_plen);
     if(xroute) {
         if(xroute->metric <= metric)
             return 0;
@@ -183,6 +184,8 @@ add_xroute(unsigned char prefix[16], unsigned char plen,
 
     memcpy(xroutes[numxroutes].prefix, prefix, 16);
     xroutes[numxroutes].plen = plen;
+    memcpy(xroutes[numxroutes].src_prefix, src_prefix, 16);
+    xroutes[numxroutes].src_plen = src_plen;
     xroutes[numxroutes].metric = metric;
     xroutes[numxroutes].ifindex = ifindex;
     xroutes[numxroutes].proto = proto;
@@ -218,7 +221,7 @@ xroute_add_new_route(unsigned char prefix[16], unsigned char plen,
         return 0;
     metric = redistribute_filter(prefix, plen, ifindex, proto);
     if(metric < INFINITY) {
-        rc = add_xroute(prefix, plen, metric, ifindex, proto);
+        rc = add_xroute(prefix, plen, src_pref, src_plen, metric, ifindex, proto);
         if(rc > 0) {
             struct babel_route *route;
             route = find_installed_route(prefix, plen, src_pref, src_plen);
