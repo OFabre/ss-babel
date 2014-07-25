@@ -184,8 +184,10 @@ add_xroute(unsigned char prefix[16], unsigned char plen,
 
     memcpy(xroutes[numxroutes].prefix, prefix, 16);
     xroutes[numxroutes].plen = plen;
-    memcpy(xroutes[numxroutes].src_prefix, src_prefix, 16);
-    xroutes[numxroutes].src_plen = src_plen;
+    if(src_plen != 0 && src_prefix != NULL) {
+      memcpy(xroutes[numxroutes].src_prefix, src_prefix, 16);
+      xroutes[numxroutes].src_plen = src_plen;
+    }
     xroutes[numxroutes].metric = metric;
     xroutes[numxroutes].ifindex = ifindex;
     xroutes[numxroutes].proto = proto;
