@@ -1017,7 +1017,7 @@ start_unicast_message(struct neighbour *neigh, int type, int len)
     }
     if(!unicast_buffer) {
         unicast_buffer = malloc(UNICAST_BUFSIZE);
-        memset(unicast_buffer, 0, UNICAST_BUFSIZE);
+        if(unicast_buffer) memset(unicast_buffer, 0, UNICAST_BUFSIZE);
     }
     if(!unicast_buffer) {
         zlog_err("malloc(unicast_buffer): %s", safe_strerror(errno));

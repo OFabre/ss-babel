@@ -52,7 +52,7 @@ babel_ipv4_route_add (struct zapi_ipv4 *api, struct prefix_ipv4 *prefix,
     inaddr_to_uchar(uchar_prefix, &prefix->prefix);
     debugf(BABEL_DEBUG_ROUTE, "Adding new ipv4 route coming from Zebra.");
     xroute_add_new_route(uchar_prefix, prefix->prefixlen + 96,
-                         NULL, 0, 
+                         zeroes, 0, 
                          api->metric, ifindex, 0, 1);
     return 0;
 }
@@ -185,8 +185,7 @@ add_xroute(unsigned char prefix[16], unsigned char plen,
     memcpy(xroutes[numxroutes].prefix, prefix, 16);
     xroutes[numxroutes].plen = plen;
     xroutes[numxroutes].src_plen = src_plen;
-    if(src_plen != 0 && src_prefix != NULL)
-        memcpy(xroutes[numxroutes].src_prefix, src_prefix, 16);
+    memcpy(xroutes[numxroutes].src_prefix, src_prefix, 16);
     xroutes[numxroutes].metric = metric;
     xroutes[numxroutes].ifindex = ifindex;
     xroutes[numxroutes].proto = proto;
