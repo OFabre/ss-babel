@@ -77,14 +77,16 @@ babel_ipv4_route_delete (struct zapi_ipv4 *api, struct prefix_ipv4 *prefix,
 /* Add redistributed route to Babel table. */
 int
 babel_ipv6_route_add (struct zapi_ipv6 *api, struct prefix_ipv6 *prefix,
-                      unsigned int ifindex, struct in6_addr *nexthop)
+                      struct prefix_ipv6 *src_p, unsigned int ifindex, 
+                      struct in6_addr *nexthop)
 {
     unsigned char uchar_prefix[16];
     unsigned char uchar_src_prefix[16];
 
     in6addr_to_uchar(uchar_prefix, &prefix->prefix);
+    in6addr_to_uchar(uchar_src_prefix, &src_p->prefix);
     debugf(BABEL_DEBUG_ROUTE, "Adding new route comming from Zebra.");
-    xroute_add_new_route(uchar_prefix, prefix->prefixlen, NULL, 0,
+    xroute_add_new_route(uchar_prefix, prefix->prefixlen, uchar_src_prefix, src_p->prefixlen,
                          api->metric, ifindex, 0, 1);
     return 0;
 }
@@ -92,13 +94,15 @@ babel_ipv6_route_add (struct zapi_ipv6 *api, struct prefix_ipv6 *prefix,
 /* Remove redistributed route from Babel table. */
 int
 babel_ipv6_route_delete (struct zapi_ipv6 *api, struct prefix_ipv6 *prefix,
-                         unsigned int ifindex)
+                         struct prefix_ipv6 *src_p, unsigned int ifindex)
 {
     unsigned char uchar_prefix[16];
+    unsigned char uchar_src_prefix[16];
     struct xroute *xroute = NULL;
 
     in6addr_to_uchar(uchar_prefix, &prefix->prefix);
-    xroute = find_xroute(uchar_prefix, prefix->prefixlen, zeroes, 0);
+    in6addr_to_uchar(uchar_src_prefix, &src_p->prefix);
+    xroute = find_xroute(uchar_prefix, prefix->prefixlen, uchar_src_prefix, src_p->prefixlen);
     if (xroute != NULL) {
         debugf(BABEL_DEBUG_ROUTE, "Removing route (from zebra).");
         flush_xroute(xroute);
