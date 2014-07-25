@@ -1394,7 +1394,7 @@ flushupdates(struct interface *ifp)
                 if(metric < INFINITY)
                     satisfy_request(route->src->prefix, route->src->plen,
                                     route->src->src_prefix, route->src->src_plen, 
-				    seqno, route->src->id, ifp);
+                                    seqno, route->src->id, ifp);
                 if((babel_ifp->flags & BABEL_IF_SPLIT_HORIZON) &&
                    route->neigh->ifp == ifp)
                     continue;
