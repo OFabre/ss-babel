@@ -960,7 +960,7 @@ consider_route(struct babel_route *route)
     if(!route_feasible(route))
         return;
 
-    xroute = find_xroute(route->src->prefix, route->src->plen);
+    xroute = find_xroute(route->src->prefix, route->src->plen, zeroes, 0);
     if(xroute)
         return;
 

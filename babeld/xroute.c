@@ -64,7 +64,7 @@ babel_ipv4_route_delete (struct zapi_ipv4 *api, struct prefix_ipv4 *prefix,
     struct xroute *xroute = NULL;
 
     inaddr_to_uchar(uchar_prefix, &prefix->prefix);
-    xroute = find_xroute(uchar_prefix, prefix->prefixlen + 96);
+    xroute = find_xroute(uchar_prefix, prefix->prefixlen + 96, zeroes, 0);
     if (xroute != NULL) {
         debugf(BABEL_DEBUG_ROUTE, "Removing ipv4 route (from zebra).");
         flush_xroute(xroute);
@@ -95,7 +95,7 @@ babel_ipv6_route_delete (struct zapi_ipv6 *api, struct prefix_ipv6 *prefix,
     struct xroute *xroute = NULL;
 
     in6addr_to_uchar(uchar_prefix, &prefix->prefix);
-    xroute = find_xroute(uchar_prefix, prefix->prefixlen);
+    xroute = find_xroute(uchar_prefix, prefix->prefixlen, zeroes, 0);
     if (xroute != NULL) {
         debugf(BABEL_DEBUG_ROUTE, "Removing route (from zebra).");
         flush_xroute(xroute);
@@ -104,7 +104,8 @@ babel_ipv6_route_delete (struct zapi_ipv6 *api, struct prefix_ipv6 *prefix,
 }
 
 struct xroute *
-find_xroute(const unsigned char *prefix, unsigned char plen)
+find_xroute(const unsigned char *prefix, unsigned char plen,
+            const unsigned char *src_prefix, unsigned char src_plen)
 {
     int i;
     for(i = 0; i < numxroutes; i++) {
@@ -147,7 +148,7 @@ static int
 add_xroute(unsigned char prefix[16], unsigned char plen,
            unsigned short metric, unsigned int ifindex, int proto)
 {
-    struct xroute *xroute = find_xroute(prefix, plen);
+    struct xroute *xroute = find_xroute(prefix, plen, zeroes, 0);
     if(xroute) {
         if(xroute->metric <= metric)
             return 0;

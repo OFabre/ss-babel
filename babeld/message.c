@@ -1201,7 +1201,7 @@ flushupdates(struct interface *ifp)
                     continue;
             }
 
-            xroute = find_xroute(b[i].prefix, b[i].plen);
+            xroute = find_xroute(b[i].prefix, b[i].plen, zeroes, 0);
             route = find_installed_route(b[i].prefix, b[i].plen, zeroes, 0);
 
             if(xroute && (!route || xroute->metric <= kernel_metric)) {
@@ -1755,7 +1755,7 @@ handle_request(struct neighbour *neigh, const unsigned char *prefix,
     struct babel_route *route;
     struct neighbour *successor = NULL;
 
-    xroute = find_xroute(prefix, plen);
+    xroute = find_xroute(prefix, plen, zeroes, 0);
     route = find_installed_route(prefix, plen, zeroes, 0);
 
     if(xroute && (!route || xroute->metric <= kernel_metric)) {

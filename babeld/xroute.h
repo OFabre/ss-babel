@@ -36,7 +36,8 @@ struct xroute {
 
 struct xroute_stream;
 
-struct xroute *find_xroute(const unsigned char *prefix, unsigned char plen);
+struct xroute *find_xroute(const unsigned char *prefix, unsigned char plen,
+                const unsigned char *src_prefix, unsigned char src_plen);
 void flush_xroute(struct xroute *xroute);
 int babel_ipv4_route_add (struct zapi_ipv4 *api, struct prefix_ipv4 *prefix,
                           unsigned int ifindex, struct in_addr *nexthop);
