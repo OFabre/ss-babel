@@ -102,12 +102,15 @@ int update_feasible(struct source *src,
 void change_smoothing_half_life(int half_life);
 int route_smoothed_metric(struct babel_route *route);
 struct babel_route *find_best_route(const unsigned char *prefix, unsigned char plen,
-                              int feasible, struct neighbour *exclude);
+                                    const unsigned char *src_prefix, unsigned char src_plen,
+                                    int feasible, struct neighbour *exclude);
 void update_neighbour_metric(struct neighbour *neigh, int change);
 void update_interface_metric(struct interface *ifp);
 void update_route_metric(struct babel_route *route);
 struct babel_route *update_route(const unsigned char *id,
                            const unsigned char *prefix, unsigned char plen,
+                           const unsigned char *src_prefix,
+                           unsigned char src_plen,
                            unsigned short seqno, unsigned short refmetric,
                            unsigned short interval, struct neighbour *neigh,
                            const unsigned char *nexthop,

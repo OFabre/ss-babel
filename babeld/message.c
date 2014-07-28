@@ -555,7 +555,7 @@ parse_packet(const unsigned char *from, struct interface *ifp,
                                         len - parsed_len, channels);
             }
 
-            update_route(router_id, prefix, plen, seqno, metric, interval,
+            update_route(router_id, prefix, plen, zeroes, 0, seqno, metric, interval,
                          neigh, nh,
                          channels, channels_len(channels));
         } else if(type == MESSAGE_REQUEST) {
@@ -1800,7 +1800,7 @@ handle_request(struct neighbour *neigh, const unsigned char *prefix,
            find a different neighbour to forward the request to. */
         struct babel_route *other_route;
 
-        other_route = find_best_route(prefix, plen, 0, neigh);
+        other_route = find_best_route(prefix, plen, zeroes, 0, 0, neigh);
         if(other_route && route_metric(other_route) < INFINITY)
             successor = other_route->neigh;
     }

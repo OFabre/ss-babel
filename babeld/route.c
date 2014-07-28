@@ -690,8 +690,9 @@ route_acceptable(struct babel_route *route, int feasible,
    that's probably overkill. */
 
 struct babel_route *
-find_best_route(const unsigned char *prefix, unsigned char plen, int feasible,
-                struct neighbour *exclude)
+find_best_route(const unsigned char *prefix, unsigned char plen,
+                const unsigned char *src_prefix, unsigned char src_plen,
+                int feasible, struct neighbour *exclude)
 {
     struct babel_route *route, *r;
     int i = find_route_slot(prefix, plen, NULL);
@@ -784,6 +785,7 @@ update_interface_metric(struct interface *ifp)
 struct babel_route *
 update_route(const unsigned char *router_id,
              const unsigned char *prefix, unsigned char plen,
+             const unsigned char *src_prefix, unsigned char src_plen,
              unsigned short seqno, unsigned short refmetric,
              unsigned short interval,
              struct neighbour *neigh, const unsigned char *nexthop,
@@ -1079,7 +1081,7 @@ route_changed(struct babel_route *route,
         struct babel_route *better_route;
         /* Do this unconditionally -- microoptimisation is not worth it. */
         better_route =
-            find_best_route(route->src->prefix, route->src->plen, 1, NULL);
+            find_best_route(route->src->prefix, route->src->plen, zeroes, 0, 1, NULL);
         if(better_route && route_metric(better_route) < route_metric(route))
             consider_route(better_route);
     }
@@ -1099,7 +1101,7 @@ void
 route_lost(struct source *src, unsigned oldmetric)
 {
     struct babel_route *new_route;
-    new_route = find_best_route(src->prefix, src->plen, 1, NULL);
+    new_route = find_best_route(src->prefix, src->plen, zeroes, 0, 1, NULL);
     if(new_route) {
         consider_route(new_route);
     } else if(oldmetric < INFINITY) {
