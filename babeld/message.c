@@ -1788,7 +1788,7 @@ handle_request(struct neighbour *neigh, const unsigned char *prefix,
         return;
     }
 
-    if(request_redundant(neigh->ifp, prefix, plen, seqno, id))
+    if(request_redundant(neigh->ifp, prefix, plen, zeroes, 0, seqno, id))
         return;
 
     /* Let's try to forward this request. */
