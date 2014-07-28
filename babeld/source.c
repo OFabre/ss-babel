@@ -36,7 +36,8 @@ struct source *srcs = NULL;
 
 struct source*
 find_source(const unsigned char *id, const unsigned char *p, unsigned char plen,
-            int create, unsigned short seqno)
+            const unsigned char *src_p, unsigned char src_plen, int create,
+            unsigned short seqno)
 {
     struct source *src;
 
