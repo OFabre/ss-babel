@@ -1378,7 +1378,8 @@ send_update(struct interface *ifp, int urgent,
 
 void
 send_update_resend(struct interface *ifp,
-                   const unsigned char *prefix, unsigned char plen)
+                   const unsigned char *prefix, unsigned char plen,
+                   const unsigned char *src_prefix, unsigned char src_plen)
 {
     assert(prefix != NULL);
 

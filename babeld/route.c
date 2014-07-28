@@ -1041,7 +1041,7 @@ send_triggered_update(struct babel_route *route, struct source *oldsrc,
         urgent = 0;
 
     if(urgent >= 2)
-        send_update_resend(NULL, route->src->prefix, route->src->plen);
+        send_update_resend(NULL, route->src->prefix, route->src->plen, zeroes, 0);
     else
         send_update(NULL, urgent, route->src->prefix, route->src->plen, zeroes, 0);
 
@@ -1093,7 +1093,7 @@ route_lost(struct source *src, unsigned oldmetric)
         consider_route(new_route);
     } else if(oldmetric < INFINITY) {
         /* Avoid creating a blackhole. */
-        send_update_resend(NULL, src->prefix, src->plen);
+        send_update_resend(NULL, src->prefix, src->plen, zeroes, 0);
         /* If the route was usable enough, try to get an alternate one.
            If it was not, we could be dealing with oscillations around
            the value of INFINITY. */
