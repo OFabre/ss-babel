@@ -51,10 +51,12 @@ THE SOFTWARE.
 
 static int
 kernel_route_v4(int add, const unsigned char *pref, unsigned short plen,
+                const unsigned char *src_prefix, unsigned short src_plen,
                 const unsigned char *gate, int ifindex,
                 unsigned int metric);
 static int
 kernel_route_v6(int add, const unsigned char *pref, unsigned short plen,
+                const unsigned char *src_prefix, unsigned short src_plen,
                 const unsigned char *gate, int ifindex,
                 unsigned int metric);
 
@@ -78,6 +80,7 @@ kernel_interface_wireless(struct interface *interface)
 
 int
 kernel_route(int operation, const unsigned char *pref, unsigned short plen,
+             const unsigned char *src_prefix, unsigned short src_plen,
              const unsigned char *gate, int ifindex, unsigned int metric,
              const unsigned char *newgate, int newifindex,
              unsigned int newmetric)
@@ -103,13 +106,13 @@ kernel_route(int operation, const unsigned char *pref, unsigned short plen,
     switch (operation) {
         case ROUTE_ADD:
             return ipv4 ?
-                   kernel_route_v4(1, pref, plen, gate, ifindex, metric):
-                   kernel_route_v6(1, pref, plen, gate, ifindex, metric);
+                   kernel_route_v4(1, pref, plen, src_prefix, src_plen, gate, ifindex, metric):
+                   kernel_route_v6(1, pref, plen, src_prefix, src_plen, gate, ifindex, metric);
             break;
         case ROUTE_FLUSH:
             return ipv4 ?
-                   kernel_route_v4(0, pref, plen, gate, ifindex, metric):
-                   kernel_route_v6(0, pref, plen, gate, ifindex, metric);
+                   kernel_route_v4(0, pref, plen, src_prefix, src_plen, gate, ifindex, metric):
+                   kernel_route_v6(0, pref, plen, src_prefix, src_plen, gate, ifindex, metric);
             break;
         case ROUTE_MODIFY:
             if(newmetric == metric && memcmp(newgate, gate, 16) == 0 &&
@@ -117,15 +120,15 @@ kernel_route(int operation, const unsigned char *pref, unsigned short plen,
                 return 0;
             debugf(BABEL_DEBUG_ROUTE, "Modify route: delete old; add new.");
             rc = ipv4 ?
-                kernel_route_v4(0, pref, plen, gate, ifindex, metric):
-                kernel_route_v6(0, pref, plen, gate, ifindex, metric);
+                kernel_route_v4(0, pref, plen, src_prefix, src_plen, gate, ifindex, metric):
+                kernel_route_v6(0, pref, plen, src_prefix, src_plen, gate, ifindex, metric);
 
             if (rc < 0)
                 return -1;
 
             rc = ipv4 ?
-                kernel_route_v4(1, pref, plen, newgate, newifindex, newmetric):
-                kernel_route_v6(1, pref, plen, newgate, newifindex, newmetric);
+                kernel_route_v4(1, pref, plen, src_prefix, src_plen, newgate, newifindex, newmetric):
+                kernel_route_v6(1, pref, plen, src_prefix, src_plen, newgate, newifindex, newmetric);
 
             return rc;
             break;
@@ -140,6 +143,7 @@ kernel_route(int operation, const unsigned char *pref, unsigned short plen,
 static int
 kernel_route_v4(int add,
                 const unsigned char *pref, unsigned short plen,
+                const unsigned char *src_prefix, unsigned short src_plen,
                 const unsigned char *gate, int ifindex, unsigned int metric)
 {
     struct zapi_ipv4 api;               /* quagga's communication system */
@@ -191,6 +195,7 @@ kernel_route_v4(int add,
 
 static int
 kernel_route_v6(int add, const unsigned char *pref, unsigned short plen,
+                const unsigned char *src_prefix, unsigned short src_plen,
                 const unsigned char *gate, int ifindex, unsigned int metric)
 {
     unsigned int tmp_ifindex = ifindex; /* (for typing) */

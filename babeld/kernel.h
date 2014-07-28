@@ -37,6 +37,7 @@ int kernel_interface_operational(struct interface *interface);
 int kernel_interface_mtu(struct interface *interface);
 int kernel_interface_wireless(struct interface *interface);
 int kernel_route(int operation, const unsigned char *dest, unsigned short plen,
+                 const unsigned char *src_prefix, unsigned short src_plen,
                  const unsigned char *gate, int ifindex, unsigned int metric,
                  const unsigned char *newgate, int newifindex,
                  unsigned int newmetric);
