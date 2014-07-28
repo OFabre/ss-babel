@@ -1616,7 +1616,8 @@ send_request(struct interface *ifp,
 
 void
 send_unicast_request(struct neighbour *neigh,
-                     const unsigned char *prefix, unsigned char plen)
+                     const unsigned char *prefix, unsigned char plen,
+                     const unsigned char *src_prefix, unsigned char src_plen)
 {
     int rc, v4, pb, len;
 
