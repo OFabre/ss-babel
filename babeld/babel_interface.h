@@ -116,8 +116,10 @@ if_up(struct interface *ifp)
 struct buffered_update {
     unsigned char id[8];
     unsigned char prefix[16];
+    unsigned char src_prefix[16];
     unsigned char plen;
-    unsigned char pad[3];
+    unsigned char src_plen;
+    unsigned char pad[2];
 };
 
 
