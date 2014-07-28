@@ -1207,7 +1207,7 @@ flushupdates(struct interface *ifp)
             if(xroute && (!route || xroute->metric <= kernel_metric)) {
                 really_send_update(ifp, myid,
                                    xroute->prefix, xroute->plen,
-                                   zeroes, 0,
+                                   xroute->src_prefix, xroute->src_plen,
                                    myseqno, xroute->metric,
                                    NULL, 0);
                 last_prefix = xroute->prefix;
@@ -1250,9 +1250,8 @@ flushupdates(struct interface *ifp)
 
                 chlen = channels_len(channels);
                 really_send_update(ifp, route->src->id,
-                                   route->src->prefix,
-                                   route->src->plen,
-                                   zeroes, 0,
+                                   route->src->prefix, route->src->plen,
+                                   route->src->src_prefix, route->src->src_plen,
                                    seqno, metric,
                                    channels, chlen);
                 update_source(route->src, seqno, metric);
@@ -1262,7 +1261,8 @@ flushupdates(struct interface *ifp)
             /* There's no route for this prefix.  This can happen shortly
                after an xroute has been retracted, so send a retraction. */
                 really_send_update(ifp, myid, b[i].prefix, b[i].plen,
-                                   zeroes, 0, myseqno, INFINITY, NULL, -1);
+                                   b[i].src_prefix, b[i].src_plen,
+                                   myseqno, INFINITY, NULL, -1);
             }
         }
         schedule_flush_now(ifp);
