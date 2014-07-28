@@ -1732,6 +1732,7 @@ send_unicast_multihop_request(struct neighbour *neigh,
 void
 send_request_resend(struct neighbour *neigh,
                     const unsigned char *prefix, unsigned char plen,
+                    const unsigned char *src_prefix, unsigned char src_plen,
                     unsigned short seqno, unsigned char *id)
 {
     if(neigh)
