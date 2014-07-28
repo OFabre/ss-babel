@@ -103,6 +103,7 @@ find_route_slot(const unsigned char *prefix, unsigned char plen,
 
 struct babel_route *
 find_route(const unsigned char *prefix, unsigned char plen,
+           const unsigned char *src_prefix, unsigned char src_plen,
            struct neighbour *neigh, const unsigned char *nexthop)
 {
     struct babel_route *route;
@@ -807,7 +808,7 @@ update_route(const unsigned char *router_id,
     if(add_metric >= INFINITY)
         return NULL;
 
-    route = find_route(prefix, plen, neigh, nexthop);
+    route = find_route(prefix, plen, zeroes, 0, neigh, nexthop);
 
     if(route && memcmp(route->src->id, router_id, 8) == 0)
         /* Avoid scanning the source table. */
