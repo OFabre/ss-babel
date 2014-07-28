@@ -303,7 +303,7 @@ do_resend()
                 case RESEND_REQUEST:
                     send_multihop_request(resend->ifp,
                                           resend->prefix, resend->plen,
-                                          zeroes, 0,
+                                          resend->src_prefix, resend->src_plen,
                                           resend->seqno, resend->id, 127);
                     break;
                 case RESEND_UPDATE:

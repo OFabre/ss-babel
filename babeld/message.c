@@ -1739,7 +1739,7 @@ send_request_resend(struct neighbour *neigh,
     if(neigh)
         send_unicast_multihop_request(neigh, prefix, plen, zeroes, 0, seqno, id, 127);
     else
-        send_multihop_request(NULL, prefix, plen, zeroes, 0, seqno, id, 127);
+        send_multihop_request(NULL, prefix, plen, src_prefix, src_plen, seqno, id, 127);
 
     record_resend(RESEND_REQUEST, prefix, plen, zeroes, 0, seqno, id,
                   neigh ? neigh->ifp : NULL, resend_delay);
