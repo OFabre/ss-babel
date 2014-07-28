@@ -1228,7 +1228,7 @@ flushupdates(struct interface *ifp)
 
                 if(metric < INFINITY)
                     satisfy_request(route->src->prefix, route->src->plen,
-                                    seqno, route->src->id, ifp);
+                                    zeroes, 0, seqno, route->src->id, ifp);
                 if((babel_ifp->flags & BABEL_IF_SPLIT_HORIZON) &&
                    route->neigh->ifp == ifp)
                     continue;
@@ -1340,8 +1340,8 @@ send_update(struct interface *ifp, int urgent,
                need to do this now. */
             route = find_installed_route(prefix, plen);
             if(route && route_metric(route) < INFINITY)
-                satisfy_request(prefix, plen, route->src->seqno, route->src->id,
-                                NULL);
+                satisfy_request(prefix, plen, zeroes, 0,
+                                route->src->seqno, route->src->id, NULL);
         }
         return;
     }

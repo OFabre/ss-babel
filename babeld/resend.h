@@ -61,6 +61,7 @@ int request_redundant(struct interface *ifp,
                       const unsigned char *src_prefix, unsigned char src_plen,
                       unsigned short seqno, const unsigned char *id);
 int satisfy_request(const unsigned char *prefix, unsigned char plen,
+                    const unsigned char *src_prefix, unsigned char src_plen,
                     unsigned short seqno, const unsigned char *id,
                     struct interface *ifp);
 
