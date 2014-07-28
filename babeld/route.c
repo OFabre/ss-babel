@@ -124,7 +124,8 @@ find_route(const unsigned char *prefix, unsigned char plen,
 }
 
 struct babel_route *
-find_installed_route(const unsigned char *prefix, unsigned char plen)
+find_installed_route(const unsigned char *prefix, unsigned char plen,
+                     const unsigned char *src_prefix, unsigned char src_plen)
 {
     int i = find_route_slot(prefix, plen, NULL);
 
@@ -922,7 +923,7 @@ send_unfeasible_request(struct neighbour *neigh, int force,
                         unsigned short seqno, unsigned short metric,
                         struct source *src)
 {
-    struct babel_route *route = find_installed_route(src->prefix, src->plen);
+    struct babel_route *route = find_installed_route(src->prefix, src->plen, zeroes, 0);
 
     if(seqno_minus(src->seqno, seqno) > 100) {
         /* Probably a source that lost its seqno.  Let it time-out. */
@@ -960,7 +961,8 @@ consider_route(struct babel_route *route)
     if(xroute)
         return;
 
-    installed = find_installed_route(route->src->prefix, route->src->plen);
+    installed = find_installed_route(route->src->prefix, route->src->plen,
+                                     zeroes, 0);
 
     if(installed == NULL)
         goto install;

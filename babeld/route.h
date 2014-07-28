@@ -81,7 +81,8 @@ struct babel_route *find_route(const unsigned char *prefix, unsigned char plen,
                         const unsigned char *src_prefix, unsigned char src_plen,
                         struct neighbour *neigh, const unsigned char *nexthop);
 struct babel_route *find_installed_route(const unsigned char *prefix,
-                                   unsigned char plen);
+                        unsigned char plen, const unsigned char *src_prefix,
+                        unsigned char src_plen);
 int installed_routes_estimate(void);
 void flush_route(struct babel_route *route);
 void flush_all_routes(void);
