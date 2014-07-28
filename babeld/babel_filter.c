@@ -30,6 +30,7 @@ THE SOFTWARE.
 
 int
 babel_filter(int output, const unsigned char *prefix, unsigned short plen,
+             const unsigned char *src_prefix, unsigned short src_plen,
              unsigned int ifindex)
 {
     struct interface *ifp = if_lookup_by_index(ifindex);

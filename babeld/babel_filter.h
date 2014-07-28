@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include "babel_interface.h"
 
 int babel_filter(int output, const unsigned char *prefix, unsigned short plen,
+                 const unsigned char *src_prefix, unsigned short src_plen,
                  unsigned int index);
 
 #endif /* BABELD_BABEL_FILTER_H */

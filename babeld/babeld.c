@@ -744,7 +744,7 @@ input_filter(const unsigned char *id,
              const unsigned char *src_prefix, unsigned short src_plen,
              const unsigned char *neigh, unsigned int ifindex)
 {
-    return babel_filter(0, prefix, plen, ifindex);
+    return babel_filter(0, prefix, plen, src_prefix, src_plen, ifindex);
 }
 
 int
@@ -752,7 +752,7 @@ output_filter(const unsigned char *id, const unsigned char *prefix,
               unsigned short plen, const unsigned char *src_prefix,
               unsigned short src_plen, unsigned int ifindex)
 {
-    return babel_filter(1, prefix, plen, ifindex);
+    return babel_filter(1, prefix, plen, src_prefix, src_plen, ifindex);
 }
 
 /* There's no redistribute filter in Quagga -- the zebra daemon does its
