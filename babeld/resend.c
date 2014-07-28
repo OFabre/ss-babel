@@ -169,7 +169,7 @@ unsatisfied_request(const unsigned char *prefix, unsigned char plen,
 {
     struct resend *request;
 
-    request = find_request(prefix, plen, zeroes, 0, NULL);
+    request = find_request(prefix, plen, src_prefix, src_plen, NULL);
     if(request == NULL || resend_expired(request))
         return 0;
 
@@ -189,7 +189,7 @@ request_redundant(struct interface *ifp,
 {
     struct resend *request;
 
-    request = find_request(prefix, plen, zeroes, 0, NULL);
+    request = find_request(prefix, plen, src_prefix, src_plen, NULL);
     if(request == NULL || resend_expired(request))
         return 0;
 
@@ -220,7 +220,7 @@ satisfy_request(const unsigned char *prefix, unsigned char plen,
 {
     struct resend *request, *previous;
 
-    request = find_request(prefix, plen, zeroes, 0, &previous);
+    request = find_request(prefix, plen, src_prefix, src_plen, &previous);
     if(request == NULL)
         return 0;
 
