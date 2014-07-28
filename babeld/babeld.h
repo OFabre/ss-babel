@@ -118,6 +118,8 @@ struct babel
 extern void babeld_quagga_init(void);
 extern int input_filter(const unsigned char *id,
                         const unsigned char *prefix, unsigned short plen,
+                        const unsigned char *src_prefix,
+                        unsigned short src_plen,
                         const unsigned char *neigh, unsigned int ifindex);
 extern int output_filter(const unsigned char *id, const unsigned char *prefix,
                          unsigned short plen, unsigned int ifindex);

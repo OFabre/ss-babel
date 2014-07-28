@@ -741,6 +741,7 @@ babeld_quagga_init(void)
 int
 input_filter(const unsigned char *id,
              const unsigned char *prefix, unsigned short plen,
+             const unsigned char *src_prefix, unsigned short src_plen,
              const unsigned char *neigh, unsigned int ifindex)
 {
     return babel_filter(0, prefix, plen, ifindex);
