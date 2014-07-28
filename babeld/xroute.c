@@ -34,7 +34,8 @@ THE SOFTWARE.
 #include "util.h"
 #include "babel_interface.h"
 
-static int xroute_add_new_route(unsigned char prefix[16], unsigned char plen,
+static int xroute_add_new_route(const unsigned char prefix[16], const unsigned char plen,
+                                const unsigned char src_prefix[16], const unsigned char src_plen,
                                 unsigned short metric, unsigned int ifindex,
                                 int proto, int send_updates);
 
@@ -51,7 +52,7 @@ babel_ipv4_route_add (struct zapi_ipv4 *api, struct prefix_ipv4 *prefix,
     inaddr_to_uchar(uchar_prefix, &prefix->prefix);
     debugf(BABEL_DEBUG_ROUTE, "Adding new ipv4 route coming from Zebra.");
     xroute_add_new_route(uchar_prefix, prefix->prefixlen + 96,
-                         api->metric, ifindex, 0, 1);
+                         zeroes, 0, api->metric, ifindex, 0, 1);
     return 0;
 }
 
@@ -81,8 +82,8 @@ babel_ipv6_route_add (struct zapi_ipv6 *api, struct prefix_ipv6 *prefix,
 
     in6addr_to_uchar(uchar_prefix, &prefix->prefix);
     debugf(BABEL_DEBUG_ROUTE, "Adding new route coming from Zebra.");
-    xroute_add_new_route(uchar_prefix, prefix->prefixlen, api->metric, ifindex,
-                         0, 1);
+    xroute_add_new_route(uchar_prefix, prefix->prefixlen, zeroes, 0,
+                         api->metric, ifindex, 0, 1);
     return 0;
 }
 
@@ -146,6 +147,7 @@ flush_xroute(struct xroute *xroute)
 
 static int
 add_xroute(unsigned char prefix[16], unsigned char plen,
+           unsigned char src_prefix[16], unsigned char src_plen,
            unsigned short metric, unsigned int ifindex, int proto)
 {
     struct xroute *xroute = find_xroute(prefix, plen, zeroes, 0);
@@ -217,7 +219,8 @@ xroute_stream_done(struct xroute_stream *stream)
 
 /* add an xroute, verifying some conditions; return 0 if there is no changes */
 static int
-xroute_add_new_route(unsigned char prefix[16], unsigned char plen,
+xroute_add_new_route(const unsigned char prefix[16], const unsigned char plen,
+                     const unsigned char src_prefix[16], const unsigned char src_plen,
                      unsigned short metric, unsigned int ifindex,
                      int proto, int send_updates)
 {
@@ -226,7 +229,7 @@ xroute_add_new_route(unsigned char prefix[16], unsigned char plen,
         return 0;
     metric = redistribute_filter(prefix, plen, zeroes, 0, ifindex, proto);
     if(metric < INFINITY) {
-        rc = add_xroute(prefix, plen, metric, ifindex, proto);
+        rc = add_xroute(prefix, plen, zeroes, 0, metric, ifindex, proto);
         if(rc > 0) {
             struct babel_route *route;
             route = find_installed_route(prefix, plen, zeroes, 0);
