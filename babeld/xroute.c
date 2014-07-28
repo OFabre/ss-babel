@@ -223,7 +223,7 @@ xroute_add_new_route(unsigned char prefix[16], unsigned char plen,
     int rc;
     if(martian_prefix(prefix, plen))
         return 0;
-    metric = redistribute_filter(prefix, plen, ifindex, proto);
+    metric = redistribute_filter(prefix, plen, zeroes, 0, ifindex, proto);
     if(metric < INFINITY) {
         rc = add_xroute(prefix, plen, metric, ifindex, proto);
         if(rc > 0) {

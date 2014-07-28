@@ -125,6 +125,7 @@ extern int output_filter(const unsigned char *id, const unsigned char *prefix,
                          unsigned short plen, const unsigned char *src_prefix,
                          unsigned short src_plen, unsigned int ifindex);
 extern int redistribute_filter(const unsigned char *prefix, unsigned short plen,
+                               const unsigned char *src_prefix, unsigned short src_plen,
                                unsigned int ifindex, int proto);
 extern int resize_receive_buffer(int size);
 extern void schedule_neighbours_check(int msecs, int override);

@@ -759,6 +759,7 @@ output_filter(const unsigned char *id, const unsigned char *prefix,
    own filtering. */
 int
 redistribute_filter(const unsigned char *prefix, unsigned short plen,
+                    const unsigned char *src_prefix, unsigned short src_plen,
                     unsigned int ifindex, int proto)
 {
     return 0;
