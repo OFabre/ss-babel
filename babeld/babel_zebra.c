@@ -140,7 +140,7 @@ babel_zebra_read_ipv6 (int command, struct zclient *zclient,
         api.metric = 0;
 
     if (command == ZEBRA_IPV6_ROUTE_ADD)
-        babel_ipv6_route_add(&api, &prefix, ifindex, &nexthop);
+        babel_ipv6_route_add(&api, &prefix, NULL, ifindex, &nexthop);
     else
         babel_ipv6_route_delete(&api, &prefix, ifindex);
 

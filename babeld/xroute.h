@@ -44,7 +44,8 @@ int babel_ipv4_route_add (struct zapi_ipv4 *api, struct prefix_ipv4 *prefix,
 int babel_ipv4_route_delete (struct zapi_ipv4 *api, struct prefix_ipv4 *prefix,
                              unsigned int ifindex);
 int babel_ipv6_route_add (struct zapi_ipv6 *api, struct prefix_ipv6 *prefix,
-                          unsigned int ifindex, struct in6_addr *nexthop);
+                          struct prefix_ipv6 *src_prefix, unsigned int ifindex,
+                          struct in6_addr *nexthop);
 int babel_ipv6_route_delete (struct zapi_ipv6 *api, struct prefix_ipv6 *prefix,
                              unsigned int ifindex);
 int xroutes_estimate(void);
