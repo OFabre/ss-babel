@@ -50,7 +50,10 @@ find_source(const unsigned char *id, const unsigned char *p, unsigned char plen,
             continue;
         if(src->plen != plen)
             continue;
-        if(memcmp(src->prefix, p, 16) == 0)
+        if(src->src_plen != src_plen)
+            continue;
+        if(memcmp(src->prefix, p, 16) == 0 &&
+           memcmp(src->src_prefix, src_p, 16) == 0)
             return src;
     }
 

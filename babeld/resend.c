@@ -134,6 +134,8 @@ record_resend(int kind, const unsigned char *prefix, unsigned char plen,
         resend->delay = delay;
         memcpy(resend->prefix, prefix, 16);
         resend->plen = plen;
+        memcpy(resend->src_prefix, src_prefix, 16);
+        resend->src_plen = src_plen;
         resend->seqno = seqno;
         if(id)
             memcpy(resend->id, id, 8);
