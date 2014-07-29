@@ -1585,7 +1585,7 @@ send_request(struct interface *ifp,
         FOR_ALL_INTERFACES(ifp_aux, linklist_node) {
             if(if_up(ifp_aux))
                 continue;
-            send_request(ifp_aux, prefix, plen, zeroes, 0);
+            send_request(ifp_aux, prefix, plen, src_prefix, src_plen);
         }
         return;
     }

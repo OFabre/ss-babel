@@ -117,10 +117,6 @@ babel_zebra_read_ipv6 (int command, struct zclient *zclient,
         stream_get (&src_p.prefix, s, PSIZE (src_p.prefixlen));
     }
 
-    if (src_p.prefixlen)
-        /* we completely ignore srcdest routes for now. */
-        return 1;
-
     /* Nexthop, ifindex, distance, metric. */
     if (CHECK_FLAG (api.message, ZAPI_MESSAGE_NEXTHOP)) {
         api.nexthop_num = stream_getc (s);
@@ -142,7 +138,7 @@ babel_zebra_read_ipv6 (int command, struct zclient *zclient,
     if (command == ZEBRA_IPV6_ROUTE_ADD)
         babel_ipv6_route_add(&api, &prefix, &src_p, ifindex, &nexthop);
     else
-        babel_ipv6_route_delete(&api, &prefix, NULL, ifindex);
+        babel_ipv6_route_delete(&api, &prefix, &src_p, ifindex);
 
     return 0;
 }
