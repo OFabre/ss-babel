@@ -201,13 +201,16 @@ kernel_route_v6(int add, const unsigned char *pref, unsigned short plen,
     unsigned int tmp_ifindex = ifindex; /* (for typing) */
     struct zapi_ipv6 api;               /* quagga's communication system */
     struct prefix_ipv6 quagga_prefix;   /* quagga's prefix */
+    struct prefix_ipv6 source_prefix;   /* source's prefix */
     struct in6_addr babel_prefix_addr;  /* babeld's prefix addr */
+    struct in6_addr source_prefix_addr; /* source's prefix addr */
     struct in6_addr nexthop;            /* next router to go */
     struct in6_addr *nexthop_pointer = &nexthop;
 
     /* convert to be understandable by quagga */
     /* convert given addresses */
     uchar_to_in6addr(&babel_prefix_addr, pref);
+    uchar_to_in6addr(&source_prefix_addr, src_prefix);
     uchar_to_in6addr(&nexthop, gate);
 
     /* make prefix structure */
@@ -221,6 +224,17 @@ kernel_route_v6(int add, const unsigned char *pref, unsigned short plen,
     api.flags = 0;
     api.message = 0;
     api.safi = SAFI_UNICAST;
+    SET_FLAG(api.message, ZAPI_MESSAGE_NEXTHOP);
+    if(src_plen != 0) {
+        SET_FLAG(api.message, ZAPI_MESSAGE_SRCPFX);
+
+        /* make source structure */
+        memset (&source_prefix, 0, sizeof(source_prefix));
+        source_prefix.family = AF_INET6;
+        IPV6_ADDR_COPY (&source_prefix.prefix, &source_prefix_addr);
+        source_prefix.prefixlen = src_plen;
+        apply_mask_ipv6(&source_prefix);
+    }
     if(metric >= KERNEL_INFINITY) {
         api.flags = ZEBRA_FLAG_REJECT;
         api.nexthop_num = 0;
@@ -236,11 +250,12 @@ kernel_route_v6(int add, const unsigned char *pref, unsigned short plen,
         api.metric = metric;
     }
 
+
     debugf(BABEL_DEBUG_ROUTE, "%s route (ipv6) to zebra",
            add ? "adding" : "removing" );
     return zapi_ipv6_route (add ? ZEBRA_IPV6_ROUTE_ADD :
                                   ZEBRA_IPV6_ROUTE_DELETE,
-                            zclient, &quagga_prefix, NULL, &api);
+                            zclient, &quagga_prefix, src_plen != 0 ? &source_prefix : NULL, &api);
 }
 
 int
