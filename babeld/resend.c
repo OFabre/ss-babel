@@ -83,7 +83,7 @@ find_request(const unsigned char *prefix, unsigned char plen,
              const unsigned char *src_prefix, unsigned char src_plen,
              struct resend **previous_return)
 {
-    return find_resend(RESEND_REQUEST, prefix, plen, zeroes, 0, previous_return);
+    return find_resend(RESEND_REQUEST, prefix, plen, src_prefix, src_plen, previous_return);
 }
 
 int
@@ -104,7 +104,7 @@ record_resend(int kind, const unsigned char *prefix, unsigned char plen,
     if(delay >= 0xFFFF)
         delay = 0xFFFF;
 
-    resend = find_resend(kind, prefix, plen, zeroes, 0, NULL);
+    resend = find_resend(kind, prefix, plen, src_prefix, src_plen, NULL);
     if(resend) {
         if(resend->delay && delay)
             resend->delay = MIN(resend->delay, delay);
