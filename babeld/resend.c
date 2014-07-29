@@ -41,7 +41,8 @@ struct resend *to_resend = NULL;
 
 static int
 resend_match(struct resend *resend,
-             int kind, const unsigned char *prefix, unsigned char plen)
+             int kind, const unsigned char *prefix, unsigned char plen,
+             const unsigned char *src_prefix, unsigned char src_plen)
 {
     return (resend->kind == kind &&
             resend->plen == plen && memcmp(resend->prefix, prefix, 16) == 0);
@@ -64,7 +65,7 @@ find_resend(int kind, const unsigned char *prefix, unsigned char plen,
     previous = NULL;
     current = to_resend;
     while(current) {
-        if(resend_match(current, kind, prefix, plen)) {
+        if(resend_match(current, kind, prefix, plen, zeroes, 0)) {
             if(previous_return)
                 *previous_return = previous;
             return current;
