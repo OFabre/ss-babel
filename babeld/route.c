@@ -1090,7 +1090,8 @@ route_changed(struct babel_route *route,
         struct babel_route *better_route;
         /* Do this unconditionally -- microoptimisation is not worth it. */
         better_route =
-            find_best_route(route->src->prefix, route->src->plen, zeroes, 0, 1, NULL);
+            find_best_route(route->src->prefix, route->src->plen,
+                            route->src->src_prefix, route->src->src_plen, 1, NULL);
         if(better_route && route_metric(better_route) < route_metric(route))
             consider_route(better_route);
     }
@@ -1110,7 +1111,8 @@ void
 route_lost(struct source *src, unsigned oldmetric)
 {
     struct babel_route *new_route;
-    new_route = find_best_route(src->prefix, src->plen, zeroes, 0, 1, NULL);
+    new_route = find_best_route(src->prefix, src->plen,
+                                src->src_prefix, src->src_plen, 1, NULL);
     if(new_route) {
         consider_route(new_route);
     } else if(oldmetric < INFINITY) {
