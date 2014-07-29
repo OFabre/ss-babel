@@ -98,7 +98,7 @@ network_prefix(int ae, int plen, unsigned int omitted,
             return -1;
         memcpy(prefix, v4prefix, 12);
         if(omitted) {
-            if (dp == NULL || !v4mapped(dp)) return -1;
+            if(dp == NULL || !v4mapped(dp)) return -1;
             memcpy(prefix, dp, 12 + omitted);
         }
         if(pb > omitted) memcpy(prefix + 12 + omitted, p, pb - omitted);
@@ -107,7 +107,7 @@ network_prefix(int ae, int plen, unsigned int omitted,
     case 2:
         if(omitted > 16 || (pb > omitted && len < pb - omitted)) return -1;
         if(omitted) {
-            if (dp == NULL || v4mapped(dp)) return -1;
+            if(dp == NULL || v4mapped(dp)) return -1;
             memcpy(prefix, dp, omitted);
         }
         if(pb > omitted) memcpy(prefix + omitted, p, pb - omitted);
@@ -344,7 +344,7 @@ parse_packet(const unsigned char *from, struct interface *ifp,
         return;
     }
 
-    if (babel_packet_examin (packet, packetlen)) {
+    if(babel_packet_examin (packet, packetlen)) {
         zlog_err("Received malformed packet on %s from %s.",
                  ifp->name, format_address(from));
         return;
@@ -690,6 +690,44 @@ parse_packet(const unsigned char *from, struct interface *ifp,
             update_route(router_id, prefix, plen, src_prefix, src_plen,
                          seqno, metric, interval, neigh, nh,
                          channels, channels_len(channels));
+        } else if(type == MESSAGE_REQUEST_SRC_SPECIFIC) {
+            unsigned char prefix[16], plen, ae, src_prefix[16], src_plen;
+            int rc, parsed = 5;
+            ae = message[2];
+            plen = message[3];
+            src_plen = message[4];
+            rc = network_prefix(ae, plen, 0, message + parsed,
+                                NULL, len + 2 - parsed, prefix);
+            if(rc < 0) goto fail;
+            if(ae == 1)
+                plen += 96;
+            parsed += rc;
+            rc = network_prefix(ae, src_plen, 0, message + parsed,
+                                NULL, len + 2 - parsed, src_prefix);
+            if(rc < 0) goto fail;
+            if(ae == 1)
+                src_plen += 96;
+            parsed += rc;
+            if(ae == 0) {
+                debugf(BABEL_DEBUG_COMMON, "Received request for any from %s on %s.\n",
+                       format_address(from), ifp->name);
+                /* If a neighbour is requesting a full route dump from us,
+                 we might as well send it an IHU. */
+                send_ihu(neigh, NULL);
+                /* Since nodes send wildcard requests on boot, booting
+                 a large number of nodes at the same time may cause an
+                 update storm.  Ignore a wildcard request that happens
+                 shortly after we sent a full update. */
+                if(babel_ifp->last_update_time <
+                   babel_now.tv_sec - MAX(babel_ifp->hello_interval / 100, 1))
+                    send_update(neigh->ifp, 0, NULL, 0, NULL, 0);
+            } else {
+                debugf(BABEL_DEBUG_COMMON, "Received request for (%s from %s) from %s on %s.\n",
+                       format_prefix(prefix, plen),
+                       format_prefix(src_prefix, src_plen),
+                       format_address(from), ifp->name);
+                send_update(neigh->ifp, 0, prefix, plen, src_prefix, src_plen);
+            }
         } else {
             debugf(BABEL_DEBUG_COMMON,"Received unknown packet type %d from %s on %s.",
                    type, format_address(from), ifp->name);
@@ -724,7 +762,7 @@ parse_packet(const unsigned char *from, struct interface *ifp,
                format_address(from), ifp->name, rtt);
 
         old_rttcost = neighbour_rttcost(neigh);
-        if (valid_rtt(neigh)) {
+        if(valid_rtt(neigh)) {
             /* Running exponential average. */
             smoothed_rtt = (babel_ifp->rtt_decay * rtt +
                               (256 - babel_ifp->rtt_decay) * neigh->rtt);
@@ -1624,7 +1662,7 @@ send_ihu(struct neighbour *neigh, struct interface *ifp)
             accumulate_bytes(ifp, neigh->address + 8, 8);
         else
             accumulate_bytes(ifp, neigh->address, 16);
-        if (send_rtt_data) {
+        if(send_rtt_data) {
             accumulate_byte(ifp, SUBTLV_TIMESTAMP);
             accumulate_byte(ifp, 8);
             accumulate_int(ifp, neigh->hello_send_us);
@@ -1643,7 +1681,7 @@ send_ihu(struct neighbour *neigh, struct interface *ifp)
             accumulate_unicast_bytes(neigh, neigh->address + 8, 8);
         else
             accumulate_unicast_bytes(neigh, neigh->address, 16);
-        if (send_rtt_data) {
+        if(send_rtt_data) {
             accumulate_unicast_byte(neigh, SUBTLV_TIMESTAMP);
             accumulate_unicast_byte(neigh, 8);
             accumulate_unicast_int(neigh, neigh->hello_send_us);
