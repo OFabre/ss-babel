@@ -234,7 +234,7 @@ xroute_add_new_route(const unsigned char prefix[16], const unsigned char plen,
         return 0;
     metric = redistribute_filter(prefix, plen, src_prefix, src_plen, ifindex, proto);
     if(metric < INFINITY) {
-        rc = add_xroute(prefix, plen, zeroes, 0, metric, ifindex, proto);
+        rc = add_xroute(prefix, plen, src_prefix, src_plen, metric, ifindex, proto);
         if(rc > 0) {
             struct babel_route *route;
             route = find_installed_route(prefix, plen, src_prefix, src_plen);
