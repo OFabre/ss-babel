@@ -820,7 +820,7 @@ update_route(const unsigned char *router_id,
         /* Avoid scanning the source table. */
         src = route->src;
     else
-        src = find_source(router_id, prefix, plen, zeroes, 0, 1, seqno);
+        src = find_source(router_id, prefix, plen, src_prefix, src_plen, 1, seqno);
 
     if(src == NULL)
         return NULL;
