@@ -814,7 +814,7 @@ update_route(const unsigned char *router_id,
     if(add_metric >= INFINITY)
         return NULL;
 
-    route = find_route(prefix, plen, zeroes, 0, neigh, nexthop);
+    route = find_route(prefix, plen, src_prefix, src_plen, neigh, nexthop);
 
     if(route && memcmp(route->src->id, router_id, 8) == 0)
         /* Avoid scanning the source table. */
