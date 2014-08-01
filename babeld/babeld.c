@@ -749,7 +749,8 @@ input_filter(const unsigned char *id,
 
 int
 output_filter(const unsigned char *id, const unsigned char *prefix,
-              unsigned short plen, unsigned int ifindex)
+              unsigned short plen, const unsigned char *src_prefix,
+              unsigned short src_plen, unsigned int ifindex)
 {
     return babel_filter(1, prefix, plen, ifindex);
 }

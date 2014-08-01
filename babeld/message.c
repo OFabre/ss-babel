@@ -1033,7 +1033,7 @@ really_send_update(struct interface *ifp,
     if(!if_up(ifp))
         return;
 
-    add_metric = output_filter(id, prefix, plen, ifp->ifindex);
+    add_metric = output_filter(id, prefix, plen, zeroes, 0, ifp->ifindex);
     if(add_metric >= INFINITY)
         return;
 

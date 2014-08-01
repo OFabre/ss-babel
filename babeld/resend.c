@@ -94,7 +94,7 @@ record_resend(int kind, const unsigned char *prefix, unsigned char plen,
     if((kind == RESEND_REQUEST &&
         input_filter(NULL, prefix, plen, zeroes, 0, NULL, ifindex) >= INFINITY) ||
        (kind == RESEND_UPDATE &&
-        output_filter(NULL, prefix, plen, ifindex) >= INFINITY))
+        output_filter(NULL, prefix, plen, zeroes, 0, ifindex) >= INFINITY))
         return 0;
 
     if(delay >= 0xFFFF)
