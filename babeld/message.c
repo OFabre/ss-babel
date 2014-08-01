@@ -1203,7 +1203,8 @@ flushupdates(struct interface *ifp)
                     continue;
             }
 
-            xroute = find_xroute(b[i].prefix, b[i].plen, zeroes, 0);
+            xroute = find_xroute(b[i].prefix, b[i].plen, 
+                                 b[i].src_prefix, b[i].src_plen);
             route = find_installed_route(b[i].prefix, b[i].plen,
                                          b[i].src_prefix, b[i].src_plen);
 
