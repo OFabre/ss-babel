@@ -82,7 +82,8 @@ void send_self_update(struct interface *ifp);
 void send_ihu(struct neighbour *neigh, struct interface *ifp);
 void send_marginal_ihu(struct interface *ifp);
 void send_request(struct interface *ifp,
-                  const unsigned char *prefix, unsigned char plen);
+                  const unsigned char *prefix, unsigned char plen,
+                  const unsigned char *src_prefix, unsigned char src_plen);
 void send_unicast_request(struct neighbour *neigh,
                           const unsigned char *prefix, unsigned char plen);
 void send_multihop_request(struct interface *ifp,

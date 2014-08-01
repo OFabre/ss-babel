@@ -1053,7 +1053,7 @@ send_triggered_update(struct babel_route *route, struct source *oldsrc,
                                 seqno_plus(route->src->seqno, 1),
                                 route->src->id);
         } else if(newmetric >= oldmetric + 288) {
-            send_request(NULL, route->src->prefix, route->src->plen);
+            send_request(NULL, route->src->prefix, route->src->plen, zeroes, 0);
         }
     }
 }

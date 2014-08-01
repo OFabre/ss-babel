@@ -1574,7 +1574,8 @@ send_marginal_ihu(struct interface *ifp)
 
 void
 send_request(struct interface *ifp,
-             const unsigned char *prefix, unsigned char plen)
+             const unsigned char *prefix, unsigned char plen,
+             const unsigned char *src_prefix, unsigned char src_plen)
 {
     int v4, pb, len;
 
@@ -1584,7 +1585,7 @@ send_request(struct interface *ifp,
         FOR_ALL_INTERFACES(ifp_aux, linklist_node) {
             if(if_up(ifp_aux))
                 continue;
-            send_request(ifp_aux, prefix, plen);
+            send_request(ifp_aux, prefix, plen, zeroes, 0);
         }
         return;
     }
