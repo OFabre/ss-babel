@@ -598,7 +598,7 @@ parse_packet(const unsigned char *from, struct interface *ifp,
                    format_prefix(prefix, plen),
                    format_address(from), ifp->name,
                    format_eui64(message + 8), seqno);
-            handle_request(neigh, prefix, plen, message[6],
+            handle_request(neigh, prefix, plen, zeroes, 0, message[6],
                            seqno, message + 8);
         } else {
             debugf(BABEL_DEBUG_COMMON,"Received unknown packet type %d from %s on %s.",
@@ -1746,7 +1746,9 @@ send_request_resend(struct neighbour *neigh,
 
 void
 handle_request(struct neighbour *neigh, const unsigned char *prefix,
-               unsigned char plen, unsigned char hop_count,
+               unsigned char plen,
+               const unsigned char *src_prefix, unsigned char src_plen,
+               unsigned char hop_count,
                unsigned short seqno, const unsigned char *id)
 {
     struct xroute *xroute;
