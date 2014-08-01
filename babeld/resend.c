@@ -309,7 +309,7 @@ do_resend()
                 case RESEND_UPDATE:
                     send_update(resend->ifp, 1,
                                 resend->prefix, resend->plen,
-                                zeroes, 0);
+                                resend->src_prefix, resend->src_plen);
                     break;
                 default: abort();
                 }
