@@ -928,7 +928,9 @@ send_unfeasible_request(struct neighbour *neigh, int force,
                         unsigned short seqno, unsigned short metric,
                         struct source *src)
 {
-    struct babel_route *route = find_installed_route(src->prefix, src->plen, zeroes, 0);
+    struct babel_route *route = find_installed_route(src->prefix, src->plen,
+                                                     src->src_prefix,
+                                                     src->src_plen);
 
     if(seqno_minus(src->seqno, seqno) > 100) {
         /* Probably a source that lost its seqno.  Let it time-out. */
@@ -967,7 +969,7 @@ consider_route(struct babel_route *route)
         return;
 
     installed = find_installed_route(route->src->prefix, route->src->plen,
-                                     zeroes, 0);
+                                     route->src->src_prefix, route->src->src_plen);
 
     if(installed == NULL)
         goto install;

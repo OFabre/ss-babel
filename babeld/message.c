@@ -1182,7 +1182,8 @@ flushupdates(struct interface *ifp)
            with the same router-id together, with IPv6 going out before IPv4. */
 
         for(i = 0; i < n; i++) {
-            route = find_installed_route(b[i].prefix, b[i].plen, zeroes, 0);
+            route = find_installed_route(b[i].prefix, b[i].plen, 
+                                         b[i].src_prefix, b[i].src_plen);
             if(route)
                 memcpy(b[i].id, route->src->id, 8);
             else
@@ -1203,7 +1204,8 @@ flushupdates(struct interface *ifp)
             }
 
             xroute = find_xroute(b[i].prefix, b[i].plen, zeroes, 0);
-            route = find_installed_route(b[i].prefix, b[i].plen, zeroes, 0);
+            route = find_installed_route(b[i].prefix, b[i].plen,
+                                         b[i].src_prefix, b[i].src_plen);
 
             if(xroute && (!route || xroute->metric <= kernel_metric)) {
                 really_send_update(ifp, myid,
@@ -1340,7 +1342,7 @@ send_update(struct interface *ifp, int urgent,
         if(prefix) {
             /* Since flushupdates only deals with non-wildcard interfaces, we
                need to do this now. */
-            route = find_installed_route(prefix, plen, zeroes, 0);
+            route = find_installed_route(prefix, plen, src_prefix, src_plen);
             if(route && route_metric(route) < INFINITY)
                 satisfy_request(prefix, plen, src_prefix, src_plen,
                                 route->src->seqno, route->src->id, NULL);
@@ -1757,8 +1759,8 @@ handle_request(struct neighbour *neigh, const unsigned char *prefix,
     struct babel_route *route;
     struct neighbour *successor = NULL;
 
-    xroute = find_xroute(prefix, plen, zeroes, 0);
-    route = find_installed_route(prefix, plen, zeroes, 0);
+    xroute = find_xroute(prefix, plen, src_prefix, src_plen);
+    route = find_installed_route(prefix, plen, src_prefix, src_plen);
 
     if(xroute && (!route || xroute->metric <= kernel_metric)) {
         if(hop_count > 0 && memcmp(id, myid, 8) == 0) {
