@@ -1154,7 +1154,7 @@ expire_routes(void)
                     /* Route about to expire, send a request. */
                     send_unicast_request(r->neigh,
                                          r->src->prefix, r->src->plen,
-                                         zeroes, 0);
+                                         r->src->src_prefix, r->src->src_plen);
             }
             r = r->next;
         }
