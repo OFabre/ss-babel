@@ -119,7 +119,7 @@ babel_zebra_read_ipv6 (int command, struct zclient *zclient,
 
     if (src_p.prefixlen)
         /* we completely ignore srcdest routes for now. */
-        return;
+        return 1;
 
     /* Nexthop, ifindex, distance, metric. */
     if (CHECK_FLAG (api.message, ZAPI_MESSAGE_NEXTHOP)) {
