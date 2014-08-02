@@ -237,7 +237,7 @@ xroute_add_new_route(const unsigned char prefix[16], const unsigned char plen,
             if(route)
                 uninstall_route(route);
             if(send_updates)
-                send_update(NULL, 0, prefix, plen, zeroes, 0);
+                send_update(NULL, 0, prefix, plen, src_prefix, src_plen);
             return 1;
         }
     }

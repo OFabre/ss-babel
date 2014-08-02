@@ -1335,7 +1335,7 @@ send_update(struct interface *ifp, int urgent,
       struct listnode *linklist_node = NULL;
         struct babel_route *route;
         FOR_ALL_INTERFACES(ifp_aux, linklist_node)
-            send_update(ifp_aux, urgent, prefix, plen, zeroes, 0);
+            send_update(ifp_aux, urgent, prefix, plen, src_prefix, src_plen);
         if(prefix) {
             /* Since flushupdates only deals with non-wildcard interfaces, we
                need to do this now. */
@@ -1384,7 +1384,7 @@ send_update_resend(struct interface *ifp,
 {
     assert(prefix != NULL);
 
-    send_update(ifp, 1, prefix, plen, zeroes, 0);
+    send_update(ifp, 1, prefix, plen, src_prefix, src_plen);
     record_resend(RESEND_UPDATE, prefix, plen, zeroes, 0, 0, 0, NULL, resend_delay);
 }
 
@@ -1769,14 +1769,14 @@ handle_request(struct neighbour *neigh, const unsigned char *prefix,
                 update_myseqno();
             }
         }
-        send_update(neigh->ifp, 1, prefix, plen, zeroes, 0);
+        send_update(neigh->ifp, 1, prefix, plen, src_prefix, src_plen);
         return;
     }
 
     if(route &&
        (memcmp(id, route->src->id, 8) != 0 ||
         seqno_compare(seqno, route->seqno) <= 0)) {
-        send_update(neigh->ifp, 1, prefix, plen, zeroes, 0);
+        send_update(neigh->ifp, 1, prefix, plen, src_prefix, src_plen);
         return;
     }
 
