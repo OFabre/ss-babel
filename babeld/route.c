@@ -53,7 +53,8 @@ static int two_to_the_one_over_hl = 0; /* 2^(1/hl) * 0x10000 */
 
 static int
 route_compare(const unsigned char *prefix, unsigned char plen,
-               struct babel_route *route)
+              const unsigned char *src_prefix, unsigned char src_plen,
+              struct babel_route *route)
 {
     int i = memcmp(prefix, route->src->prefix, 16);
     if(i != 0)
@@ -86,7 +87,7 @@ find_route_slot(const unsigned char *prefix, unsigned char plen,
 
     do {
         m = (p + g) / 2;
-        c = route_compare(prefix, plen, routes[m]);
+        c = route_compare(prefix, plen, zeroes, 0, routes[m]);
         if(c == 0)
             return m;
         else if(c < 0)
