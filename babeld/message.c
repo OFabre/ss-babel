@@ -51,17 +51,17 @@ struct timeval unicast_flush_timeout = {0, 0};
 /* Minimum TLV _body_ length for TLVs of particular types (0 = no limit). */
 static const unsigned char tlv_min_length[MESSAGE_MAX + 1] =
 {
-    [ MESSAGE_PAD1       ] =  0,
-    [ MESSAGE_PADN       ] =  0,
-    [ MESSAGE_ACK_REQ    ] =  6,
-    [ MESSAGE_ACK        ] =  2,
-    [ MESSAGE_HELLO      ] =  6,
-    [ MESSAGE_IHU        ] =  6,
-    [ MESSAGE_ROUTER_ID  ] = 10,
-    [ MESSAGE_NH         ] =  2,
-    [ MESSAGE_UPDATE     ] = 10,
-    [ MESSAGE_REQUEST    ] =  2,
-    [ MESSAGE_MH_REQUEST ] = 14,
+    [ MESSAGE_PAD1                    ] =  0,
+    [ MESSAGE_PADN                    ] =  0,
+    [ MESSAGE_ACK_REQ                 ] =  6,
+    [ MESSAGE_ACK                     ] =  2,
+    [ MESSAGE_HELLO                   ] =  6,
+    [ MESSAGE_IHU                     ] =  6,
+    [ MESSAGE_ROUTER_ID               ] = 10,
+    [ MESSAGE_NH                      ] =  2,
+    [ MESSAGE_UPDATE                  ] = 10,
+    [ MESSAGE_REQUEST                 ] =  2,
+    [ MESSAGE_MH_REQUEST              ] = 14,
 };
 
 /* Parse a network prefix, encoded in the somewhat baroque compressed
