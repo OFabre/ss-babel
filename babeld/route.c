@@ -88,7 +88,7 @@ find_route_slot(const unsigned char *prefix, unsigned char plen,
 
     do {
         m = (p + g) / 2;
-        c = route_compare(prefix, plen, zeroes, 0, routes[m]);
+        c = route_compare(prefix, plen, src_prefix, src_plen, routes[m]);
         if(c == 0)
             return m;
         else if(c < 0)
