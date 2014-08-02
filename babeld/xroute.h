@@ -47,7 +47,7 @@ int babel_ipv6_route_add (struct zapi_ipv6 *api, struct prefix_ipv6 *prefix,
                           struct prefix_ipv6 *src_prefix, unsigned int ifindex,
                           struct in6_addr *nexthop);
 int babel_ipv6_route_delete (struct zapi_ipv6 *api, struct prefix_ipv6 *prefix,
-                             unsigned int ifindex);
+                             struct prefix_ipv6 *src_prefix, unsigned int ifindex);
 int xroutes_estimate(void);
 struct xroute_stream *xroute_stream();
 struct xroute *xroute_stream_next(struct xroute_stream *stream);
