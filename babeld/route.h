@@ -101,8 +101,6 @@ void change_smoothing_half_life(int half_life);
 int route_smoothed_metric(struct babel_route *route);
 struct babel_route *find_best_route(const unsigned char *prefix, unsigned char plen,
                               int feasible, struct neighbour *exclude);
-struct babel_route *install_best_route(const unsigned char prefix[16],
-                                 unsigned char plen);
 void update_neighbour_metric(struct neighbour *neigh, int change);
 void update_interface_metric(struct interface *ifp);
 void update_route_metric(struct babel_route *route);
