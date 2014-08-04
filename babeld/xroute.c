@@ -80,10 +80,13 @@ babel_ipv6_route_add (struct zapi_ipv6 *api, struct prefix_ipv6 *prefix,
                       struct in6_addr *nexthop)
 {
     unsigned char uchar_prefix[16];
+    unsigned char uchar_src_prefix[16];
 
     in6addr_to_uchar(uchar_prefix, &prefix->prefix);
+    in6addr_to_uchar(uchar_src_prefix, &src_prefix->prefix);
     debugf(BABEL_DEBUG_ROUTE, "Adding new route coming from Zebra.");
-    xroute_add_new_route(uchar_prefix, prefix->prefixlen, zeroes, 0,
+    xroute_add_new_route(uchar_prefix, prefix->prefixlen,
+                         uchar_src_prefix, src_prefix->prefixlen,
                          api->metric, ifindex, 0, 1);
     return 0;
 }
