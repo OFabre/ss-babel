@@ -731,7 +731,7 @@ parse_packet(const unsigned char *from, struct interface *ifp,
                     send_update(neigh->ifp, 0, NULL, 0, NULL, 0);
             } else {
                 debugf(BABEL_DEBUG_COMMON,
-                       "Received request for (%s from %s) from %s on %s.\n",
+                       "Received request for (%s from %s) from %s on %s.",
                        format_prefix(prefix, plen),
                        format_prefix(src_prefix, src_plen),
                        format_address(from), ifp->name);
@@ -1192,6 +1192,8 @@ really_send_update(struct interface *ifp,
     babel_interface_nfo *babel_ifp = babel_get_if_nfo(ifp);
     int add_metric, v4, real_plen, omit = 0;
     const unsigned char *real_prefix;
+    const unsigned char *real_src_prefix = NULL;
+    int real_src_plen = 0;
     unsigned short flags = 0;
     int channels_size;
 
@@ -1203,14 +1205,14 @@ really_send_update(struct interface *ifp,
     if(!if_up(ifp))
         return;
 
-    add_metric = output_filter(id, prefix, plen,
-                               src_prefix, src_plen, ifp->ifindex);
+    add_metric = output_filter(id, prefix, plen, src_prefix,
+                               src_plen, ifp->ifindex);
     if(add_metric >= INFINITY)
         return;
 
     metric = MIN(metric + add_metric, INFINITY);
     /* Worst case */
-    ensure_space(ifp, 20 + 12 + 28);
+    ensure_space(ifp, 20 + 12 + 28 + 18);
 
     v4 = plen >= 96 && v4mapped(prefix);
 
@@ -1230,21 +1232,27 @@ really_send_update(struct interface *ifp,
 
         real_prefix = prefix + 12;
         real_plen = plen - 96;
+        if(src_plen != 0) {
+            real_src_prefix = src_prefix + 12;
+            real_src_plen = src_plen - 96;
+        }
     } else {
         if(babel_ifp->have_buffered_prefix) {
             while(omit < plen / 8 &&
                   babel_ifp->buffered_prefix[omit] == prefix[omit])
                 omit++;
         }
-        if(!babel_ifp->have_buffered_prefix || plen >= 48)
+        if(src_plen == 0 && (!babel_ifp->have_buffered_prefix || plen >= 48))
             flags |= 0x80;
         real_prefix = prefix;
         real_plen = plen;
+        real_src_prefix = src_prefix;
+        real_src_plen = src_plen;
     }
 
-    if(!babel_ifp->have_buffered_id
-       || memcmp(id, babel_ifp->buffered_id, 8) != 0) {
-        if(real_plen == 128 && memcmp(real_prefix + 8, id, 8) == 0) {
+    if(!babel_ifp->have_buffered_id || memcmp(id, babel_ifp->buffered_id, 8) != 0) {
+        if(src_plen == 0 && real_plen == 128 &&
+           memcmp(real_prefix + 8, id, 8) == 0) {
             flags |= 0x40;
         } else {
             start_message(ifp, MESSAGE_ROUTER_ID, 10);
@@ -1256,24 +1264,39 @@ really_send_update(struct interface *ifp,
         babel_ifp->have_buffered_id = 1;
     }
 
-    start_message(ifp, MESSAGE_UPDATE, 10 + (real_plen + 7) / 8 - omit +
-                  channels_size);
+    if(src_plen == 0)
+        start_message(ifp, MESSAGE_UPDATE, 10 + (real_plen + 7) / 8 - omit +
+                      channels_size);
+    else
+        start_message(ifp, MESSAGE_UPDATE_SRC_SPECIFIC,
+                      10 + (real_plen + 7) / 8 - omit +
+                      (real_src_plen + 7) / 8 + channels_size);
     accumulate_byte(ifp, v4 ? 1 : 2);
-    accumulate_byte(ifp, flags);
+    if(src_plen != 0)
+        accumulate_byte(ifp, real_src_plen);
+    else
+        accumulate_byte(ifp, flags);
     accumulate_byte(ifp, real_plen);
     accumulate_byte(ifp, omit);
     accumulate_short(ifp, (babel_ifp->update_interval + 5) / 10);
     accumulate_short(ifp, seqno);
     accumulate_short(ifp, metric);
     accumulate_bytes(ifp, real_prefix + omit, (real_plen + 7) / 8 - omit);
+    if(src_plen != 0)
+        accumulate_bytes(ifp, real_src_prefix, (real_src_plen + 7) / 8);
     /* Note that an empty channels TLV is different from no such TLV. */
     if(channels_len >= 0) {
         accumulate_byte(ifp, 2);
         accumulate_byte(ifp, channels_len);
         accumulate_bytes(ifp, channels, channels_len);
     }
-    end_message(ifp, MESSAGE_UPDATE, 10 + (real_plen + 7) / 8 - omit +
-                channels_size);
+    if(src_plen == 0)
+        end_message(ifp, MESSAGE_UPDATE, 10 + (real_plen + 7) / 8 - omit +
+                    channels_size);
+    else
+        end_message(ifp, MESSAGE_UPDATE_SRC_SPECIFIC,
+                    10 + (real_plen + 7) / 8 - omit +
+                    (real_src_plen + 7) / 8 + channels_size);
 
     if(flags & 0x80) {
         memcpy(babel_ifp->buffered_prefix, prefix, 16);
@@ -1780,10 +1803,10 @@ send_request(struct interface *ifp,
         return;
 
     if(!prefix)
-        debugf(BABEL_DEBUG_COMMON, "sending request to %s for any.\n",
+        debugf(BABEL_DEBUG_COMMON, "sending request to %s for any.",
                ifp->name);
     else
-        debugf(BABEL_DEBUG_COMMON, "sending request to %s for %s from %s.\n",
+        debugf(BABEL_DEBUG_COMMON, "sending request to %s for %s from %s.",
                ifp->name,
                format_prefix(prefix, plen),
                format_prefix(src_prefix, src_plen));
