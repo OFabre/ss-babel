@@ -1496,6 +1496,9 @@ buffer_update(struct interface *ifp,
     memcpy(babel_ifp->buffered_updates[babel_ifp->num_buffered_updates].prefix,
            prefix, 16);
     babel_ifp->buffered_updates[babel_ifp->num_buffered_updates].plen = plen;
+    memcpy(babel_ifp->buffered_updates[babel_ifp->num_buffered_updates].src_prefix,
+           src_prefix, 16);
+    babel_ifp->buffered_updates[babel_ifp->num_buffered_updates].src_plen = src_plen;
     babel_ifp->num_buffered_updates++;
 }
 
