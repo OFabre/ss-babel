@@ -1345,7 +1345,9 @@ flushupdates(struct interface *ifp)
     struct xroute *xroute;
     struct babel_route *route;
     const unsigned char *last_prefix = NULL;
+    const unsigned char *last_src_prefix = NULL;
     unsigned char last_plen = 0xFF;
+    unsigned char last_src_plen = 0xFF;
     int i;
 
     if(ifp == NULL) {
@@ -1390,11 +1392,12 @@ flushupdates(struct interface *ifp)
                sent out.  Since our buffer is now sorted, it is enough to
                compare with the previous update. */
 
-            if(last_prefix) {
-                if(b[i].plen == last_plen &&
-                   memcmp(b[i].prefix, last_prefix, 16) == 0)
-                    continue;
-            }
+            if(last_prefix &&
+               b[i].plen == last_plen &&
+               b[i].src_plen == last_src_plen &&
+               memcmp(b[i].prefix, last_prefix, 16) == 0 &&
+               memcmp(b[i].src_prefix, last_src_prefix, 16) == 0)
+                continue;
 
             xroute = find_xroute(b[i].prefix, b[i].plen,
                                  b[i].src_prefix, b[i].src_plen);
@@ -1409,6 +1412,8 @@ flushupdates(struct interface *ifp)
                                    NULL, 0);
                 last_prefix = xroute->prefix;
                 last_plen = xroute->plen;
+                last_src_prefix = xroute->src_prefix;
+                last_src_plen = xroute->src_plen;
             } else if(route) {
                 unsigned char channels[DIVERSITY_HOPS];
                 int chlen;
@@ -1455,6 +1460,8 @@ flushupdates(struct interface *ifp)
                 update_source(route->src, seqno, metric);
                 last_prefix = route->src->prefix;
                 last_plen = route->src->plen;
+                last_src_prefix = route->src->src_prefix;
+                last_src_plen = route->src->src_plen;
             } else {
             /* There's no route for this prefix.  This can happen shortly
                after an xroute has been retracted, so send a retraction. */
