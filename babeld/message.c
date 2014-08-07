@@ -1527,11 +1527,12 @@ send_update(struct interface *ifp, int urgent,
 
     babel_ifp = babel_get_if_nfo(ifp);
     if(prefix) {
-        debugf(BABEL_DEBUG_COMMON,"Sending update to %s for %s.",
-               ifp->name, format_prefix(prefix, plen));
+        debugf(BABEL_DEBUG_COMMON,"Sending update to %s for %s from %s.",
+               ifp->name, format_prefix(prefix, plen),
+               format_prefix(src_prefix, src_plen));
         buffer_update(ifp, prefix, plen);
     } else {
-        struct route_stream *routes = NULL;
+        struct route_stream *routes;
         send_self_update(ifp);
         debugf(BABEL_DEBUG_COMMON,"Sending update to %s for any.", ifp->name);
         routes = route_stream(1);

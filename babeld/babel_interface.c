@@ -1042,9 +1042,10 @@ show_babel_routes_sub(struct babel_route *route, struct vty *vty,
     }
 
     vty_out(vty,
-            "%s metric %d refmetric %d id %s seqno %d%s age %d "
+            "%s from %s metric %d refmetric %d id %s seqno %d%s age %d "
             "via %s neigh %s%s%s%s%s",
             format_prefix(route->src->prefix, route->src->plen),
+            format_prefix(route->src->src_prefix, route->src->src_plen),
             route_metric(route), route->refmetric,
             format_eui64(route->src->id),
             (int)route->seqno,
@@ -1066,8 +1067,9 @@ show_babel_xroutes_sub (struct xroute *xroute, struct vty *vty,
     if(prefix && !babel_prefix_eq(prefix, xroute->prefix, xroute->plen))
         return;
 
-    vty_out(vty, "%s metric %d (exported)%s",
+    vty_out(vty, "%s from %s metric %d (exported)%s",
             format_prefix(xroute->prefix, xroute->plen),
+            format_prefix(xroute->src_prefix, xroute->src_plen),
             xroute->metric,
             VTY_NEWLINE);
 }
