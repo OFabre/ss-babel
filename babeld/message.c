@@ -1696,6 +1696,7 @@ send_multihop_request(struct interface *ifp,
 void
 send_unicast_multihop_request(struct neighbour *neigh,
                               const unsigned char *prefix, unsigned char plen,
+                              const unsigned char *src_prefix, unsigned char src_plen,
                               unsigned short seqno, const unsigned char *id,
                               unsigned short hop_count)
 {
@@ -1734,7 +1735,7 @@ send_request_resend(struct neighbour *neigh,
                     unsigned short seqno, unsigned char *id)
 {
     if(neigh)
-        send_unicast_multihop_request(neigh, prefix, plen, seqno, id, 127);
+        send_unicast_multihop_request(neigh, prefix, plen, zeroes, 0, seqno, id, 127);
     else
         send_multihop_request(NULL, prefix, plen, zeroes, 0, seqno, id, 127);
 
@@ -1805,8 +1806,8 @@ handle_request(struct neighbour *neigh, const unsigned char *prefix,
         /* Give up */
         return;
 
-    send_unicast_multihop_request(successor, prefix, plen, seqno, id,
-                                  hop_count - 1);
+    send_unicast_multihop_request(successor, prefix, plen, zeroes, 0,
+                                  seqno, id, hop_count - 1);
     record_resend(RESEND_REQUEST, prefix, plen, seqno, id,
                   neigh->ifp, 0);
 }
