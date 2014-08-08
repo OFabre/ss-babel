@@ -757,7 +757,7 @@ interface_recalculate(struct interface *ifp)
     set_timeout(&babel_ifp->hello_timeout, babel_ifp->hello_interval);
     set_timeout(&babel_ifp->update_timeout, babel_ifp->update_interval);
     send_hello(ifp);
-    send_request(ifp, NULL, 0, zeroes, 0);
+    send_request(ifp, NULL, 0, NULL, 0);
 
     update_interface_metric(ifp);
 
