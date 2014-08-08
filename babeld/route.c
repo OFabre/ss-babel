@@ -817,6 +817,7 @@ update_route(const unsigned char *router_id,
     int metric, feasible;
     int add_metric;
     int hold_time = MAX((4 * interval) / 100 + interval / 50, 15);
+    int is_v4;
 
     if(memcmp(router_id, myid, 8) == 0)
         return NULL;
@@ -826,7 +827,16 @@ update_route(const unsigned char *router_id,
                  format_prefix(prefix, plen), format_address(nexthop));
         return NULL;
     }
+    if(src_plen != 0 && martian_prefix(src_prefix, src_plen)) {
+        fprintf(stderr, "Rejecting martian route to %s from %s through %s.\n",
+                format_prefix(prefix, plen),
+                format_prefix(src_prefix, src_plen), format_eui64(router_id));
+        return NULL;
+    }
 
+    is_v4 = v4mapped(prefix);
+    if(src_plen != 0 && is_v4 != v4mapped(src_prefix))
+         return NULL;
     add_metric = input_filter(router_id, prefix, plen, src_prefix, src_plen,
                               neigh->address, neigh->ifp->ifindex);
     if(add_metric >= INFINITY)
