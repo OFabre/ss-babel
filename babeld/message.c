@@ -601,6 +601,94 @@ parse_packet(const unsigned char *from, struct interface *ifp,
                    format_eui64(message + 8), seqno);
             handle_request(neigh, prefix, plen, zeroes, 0, message[6],
                            seqno, message + 8);
+        } else if(type == MESSAGE_UPDATE_SRC_SPECIFIC) {
+            unsigned char prefix[16], src_prefix[16], *nh;
+            unsigned char ae, plen, src_plen, omitted;
+            unsigned char channels[DIVERSITY_HOPS];
+            unsigned short interval, seqno, metric;
+            const unsigned char *src_prefix_beginning = NULL;
+            int rc, parsed_len = 0;
+            ae = message[2];
+            src_plen = message[3];
+            plen = message[4];
+            omitted = message[5];
+            DO_NTOHS(interval, message + 6);
+            DO_NTOHS(seqno, message + 8);
+            DO_NTOHS(metric, message + 10);
+            if(omitted == 0 || (ae == 1 ? have_v4_prefix : have_v6_prefix))
+                rc = network_prefix(ae, plen, omitted, message + 12,
+                                    ae == 1 ? v4_prefix : v6_prefix,
+                                    len - 10, prefix);
+            else
+                rc = -1;
+            if(rc < 0)
+                goto fail;
+
+            parsed_len = 10 + rc;
+            src_prefix_beginning = message + 2 + parsed_len;
+
+            rc = network_prefix(ae, src_plen, 0, src_prefix_beginning, NULL,
+                                    len - parsed_len, src_prefix);
+            if(rc < 0)
+                goto fail;
+            parsed_len += rc;
+            if(ae == 1) {
+                plen += 96;
+                src_plen += 96;
+            }
+
+            if(!have_router_id) {
+                fprintf(stderr, "Received prefix with no router id.\n");
+                goto fail;
+            }
+            debugf(BABEL_DEBUG_COMMON,
+                   "Received ss-update for (%s from %s) from %s on %s.\n",
+                   format_prefix(prefix, plen),
+                   format_prefix(src_prefix, src_plen),
+                   format_address(from), ifp->name);
+
+            if(ae == 0) {
+                debugf(BABEL_DEBUG_COMMON,
+                       "Received invalid Source-Specific wildcard update.\n");
+                retract_neighbour_routes(neigh);
+                goto done;
+            } else if(ae == 1) {
+                if(!have_v4_nh)
+                    goto fail;
+                nh = v4_nh;
+            } else if(have_v6_nh) {
+                nh = v6_nh;
+            } else {
+                nh = neigh->address;
+            }
+
+            if(ae == 1) {
+                babel_interface_nfo *babel_ifp =babel_get_if_nfo(neigh->ifp);
+                if(!babel_ifp->ipv4)
+                    goto done;
+            }
+
+            if((ifp->flags & BABEL_IF_FARAWAY)) {
+                channels[0] = 0;
+            } else {
+                /* This will be overwritten by parse_update_subtlv below. */
+                if(metric < 256) {
+                    /* Assume non-interfering (wired) link. */
+                    channels[0] = 0;
+                } else {
+                    /* Assume interfering. */
+                    channels[0] = BABEL_IF_CHANNEL_INTERFERING;
+                    channels[1] = 0;
+                }
+
+                if(parsed_len < len)
+                    parse_update_subtlv(message + 2 + parsed_len,
+                                        len - parsed_len, channels);
+            }
+
+            update_route(router_id, prefix, plen, src_prefix, src_plen,
+                         seqno, metric, interval, neigh, nh,
+                         channels, channels_len(channels));
         } else {
             debugf(BABEL_DEBUG_COMMON,"Received unknown packet type %d from %s on %s.",
                    type, format_address(from), ifp->name);
