@@ -1737,7 +1737,7 @@ send_request_resend(struct neighbour *neigh,
                     unsigned short seqno, unsigned char *id)
 {
     if(neigh)
-        send_unicast_multihop_request(neigh, prefix, plen, zeroes, 0, seqno, id, 127);
+        send_unicast_multihop_request(neigh, prefix, plen, src_prefix, src_plen, seqno, id, 127);
     else
         send_multihop_request(NULL, prefix, plen, src_prefix, src_plen, seqno, id, 127);
 
@@ -1810,7 +1810,7 @@ handle_request(struct neighbour *neigh, const unsigned char *prefix,
         /* Give up */
         return;
 
-    send_unicast_multihop_request(successor, prefix, plen, zeroes, 0,
+    send_unicast_multihop_request(successor, prefix, plen, src_prefix, src_plen,
                                   seqno, id, hop_count - 1);
     record_resend(RESEND_REQUEST, prefix, plen, zeroes, 0, seqno, id,
                   neigh->ifp, 0);
