@@ -50,8 +50,9 @@ struct resend *find_request(const unsigned char *prefix, unsigned char plen,
                     struct resend **previous_return);
 void flush_resends(struct neighbour *neigh);
 int record_resend(int kind, const unsigned char *prefix, unsigned char plen,
-                   unsigned short seqno, const unsigned char *id,
-                   struct interface *ifp, int delay);
+                  const unsigned char *src_prefix, unsigned char src_plen,
+                  unsigned short seqno, const unsigned char *id,
+                  struct interface *ifp, int delay);
 int unsatisfied_request(const unsigned char *prefix, unsigned char plen,
                         unsigned short seqno, const unsigned char *id);
 int request_redundant(struct interface *ifp,
