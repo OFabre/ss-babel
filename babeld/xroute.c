@@ -147,8 +147,8 @@ flush_xroute(struct xroute *xroute)
 }
 
 static int
-add_xroute(unsigned char prefix[16], unsigned char plen,
-           unsigned char src_prefix[16], unsigned char src_plen,
+add_xroute(const unsigned char prefix[16], unsigned char plen,
+           const unsigned char src_prefix[16], unsigned char src_plen,
            unsigned short metric, unsigned int ifindex, int proto)
 {
     struct xroute *xroute = find_xroute(prefix, plen, zeroes, 0);
