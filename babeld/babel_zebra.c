@@ -86,7 +86,7 @@ struct cmd_node zebra_node =
 /* Zebra route add and delete treatment (ipv6). */
 static int
 babel_zebra_read_ipv6 (int command, struct zclient *zclient,
-		       zebra_size_t length)
+                       zebra_size_t length)
 {
     struct stream *s;
     struct zapi_ipv6 api;
@@ -149,7 +149,7 @@ babel_zebra_read_ipv6 (int command, struct zclient *zclient,
 
 static int
 babel_zebra_read_ipv4 (int command, struct zclient *zclient,
-		       zebra_size_t length)
+                       zebra_size_t length)
 {
     struct stream *s;
     struct zapi_ipv4 api;

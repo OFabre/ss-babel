@@ -61,7 +61,7 @@ babel_filter(int output, const unsigned char *prefix, unsigned short plen,
                    p.prefixlen,
                    output ? "out" : "in");
             return INFINITY;
-	}
+        }
     }
     if (babel_ifp != NULL && babel_ifp->prefix[distribute]) {
         if (prefix_list_apply (babel_ifp->prefix[distribute], &p)
@@ -73,7 +73,7 @@ babel_filter(int output, const unsigned char *prefix, unsigned short plen,
                    p.prefixlen,
                    output ? "out" : "in");
             return INFINITY;
-	}
+        }
     }
 
     /* All interface filter check. */
@@ -91,9 +91,9 @@ babel_filter(int output, const unsigned char *prefix, unsigned short plen,
                            p.prefixlen,
                            output ? "out" : "in");
                     return INFINITY;
-		}
-	    }
-	}
+                }
+            }
+        }
         if (dist->prefix[distribute]) {
             plist = prefix_list_lookup (p.family, dist->prefix[distribute]);
             if (plist) {
@@ -105,9 +105,9 @@ babel_filter(int output, const unsigned char *prefix, unsigned short plen,
                            p.prefixlen,
                            output ? "out" : "in");
                     return INFINITY;
-		}
-	    }
-	}
+                }
+            }
+        }
     }
     return 0;
 }
