@@ -569,7 +569,7 @@ parse_packet(const unsigned char *from, struct interface *ifp,
                    message[2] == 0 ? "any" : format_prefix(prefix, plen),
                    format_address(from), ifp->name);
             if(message[2] == 0) {
-                struct babel_interface *neigh_ifp =babel_get_if_nfo(neigh->ifp);
+                babel_interface_nfo *neigh_ifp =babel_get_if_nfo(neigh->ifp);
                 /* If a neighbour is requesting a full route dump from us,
                    we might as well send it an IHU. */
                 send_ihu(neigh, NULL);
@@ -1214,7 +1214,7 @@ flushupdates(struct interface *ifp)
                 unsigned char channels[DIVERSITY_HOPS];
                 int chlen;
                 struct interface *route_ifp = route->neigh->ifp;
-                struct babel_interface *babel_route_ifp = NULL;
+                babel_interface_nfo *babel_route_ifp = NULL;
                 unsigned short metric;
                 unsigned short seqno;
 

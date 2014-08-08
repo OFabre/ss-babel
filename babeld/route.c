@@ -556,7 +556,7 @@ channels_interfere(int ch1, int ch2)
 int
 route_interferes(struct babel_route *route, struct interface *ifp)
 {
-    struct babel_interface *babel_ifp = NULL;
+    babel_interface_nfo *babel_ifp = NULL;
     switch(diversity_kind) {
     case DIVERSITY_NONE:
         return 1;
