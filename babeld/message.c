@@ -1335,7 +1335,16 @@ compare_buffered_updates(const void *av, const void *bv)
     else if(a->plen > b->plen)
         return -1;
 
-    return memcmp(a->prefix, b->prefix, 16);
+    rc = memcmp(a->prefix, b->prefix, 16);
+    if(rc != 0)
+        return rc;
+
+    if(a->src_plen < b->src_plen)
+        return -1;
+    else if(a->src_plen > b->src_plen)
+        return 1;
+
+    return memcmp(a->src_prefix, b->src_prefix, 16);
 }
 
 void
