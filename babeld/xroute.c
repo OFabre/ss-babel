@@ -94,10 +94,14 @@ babel_ipv6_route_delete (struct zapi_ipv6 *api, struct prefix_ipv6 *prefix,
                          struct prefix_ipv6 *src_prefix, unsigned int ifindex)
 {
     unsigned char uchar_prefix[16];
+    unsigned char uchar_src_prefix[16];
     struct xroute *xroute = NULL;
 
     in6addr_to_uchar(uchar_prefix, &prefix->prefix);
-    xroute = find_xroute(uchar_prefix, prefix->prefixlen, zeroes, 0);
+    in6addr_to_uchar(uchar_src_prefix, &src_prefix->prefix);
+
+    xroute = find_xroute(uchar_prefix, prefix->prefixlen,
+                         uchar_src_prefix, src_prefix->prefixlen);
     if (xroute != NULL) {
         debugf(BABEL_DEBUG_ROUTE, "Removing route (from zebra).");
         flush_xroute(xroute);
@@ -151,7 +155,7 @@ add_xroute(const unsigned char prefix[16], unsigned char plen,
            const unsigned char src_prefix[16], unsigned char src_plen,
            unsigned short metric, unsigned int ifindex, int proto)
 {
-    struct xroute *xroute = find_xroute(prefix, plen, zeroes, 0);
+    struct xroute *xroute = find_xroute(prefix, plen, src_prefix, src_plen);
     if(xroute) {
         if(xroute->metric <= metric)
             return 0;
