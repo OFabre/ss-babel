@@ -1445,7 +1445,7 @@ send_self_update(struct interface *ifp)
             struct xroute *xroute = xroute_stream_next(xroutes);
             if(xroute == NULL) break;
             send_update(ifp, 0, xroute->prefix, xroute->plen,
-                        zeroes, 0);
+                        xroute->src_prefix, xroute->src_plen);
         }
         xroute_stream_done(xroutes);
     } else {
