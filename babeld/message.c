@@ -1893,8 +1893,9 @@ send_multihop_request(struct interface *ifp,
     if(!if_up(ifp))
         return;
 
-    debugf(BABEL_DEBUG_COMMON,"Sending request (%d) on %s for %s.",
-           hop_count, ifp->name, format_prefix(prefix, plen));
+    debugf(BABEL_DEBUG_COMMON,"Sending request (%d) on %s for %s from %s.",
+           hop_count, ifp->name, format_prefix(prefix, plen),
+           format_prefix(src_prefix, src_plen));
     v4 = plen >= 96 && v4mapped(prefix);
     pb = v4 ? ((plen - 96) + 7) / 8 : (plen + 7) / 8;
     len = 6 + 8 + pb;
@@ -1943,9 +1944,10 @@ send_unicast_multihop_request(struct neighbour *neigh,
     flushupdates(neigh->ifp);
 
     debugf(BABEL_DEBUG_COMMON,
-           "Sending multi-hop request to %s for %s (%d hops).",
+           "Sending multi-hop request to %s for (%s from %s) (%d hops).",
            format_address(neigh->address),
-           format_prefix(prefix, plen), hop_count);
+           format_prefix(prefix, plen),
+           format_prefix(src_prefix, src_plen), hop_count);
     v4 = plen >= 96 && v4mapped(prefix);
     pb = v4 ? ((plen - 96) + 7) / 8 : (plen + 7) / 8;
     len = 6 + 8 + pb;
