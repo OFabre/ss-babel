@@ -1531,7 +1531,7 @@ send_update(struct interface *ifp, int urgent,
         debugf(BABEL_DEBUG_COMMON,"Sending update to %s for %s from %s.",
                ifp->name, format_prefix(prefix, plen),
                format_prefix(src_prefix, src_plen));
-        buffer_update(ifp, prefix, plen);
+        buffer_update(ifp, prefix, plen, zeroes, 0);
     } else {
         struct route_stream *routes;
         send_self_update(ifp);
@@ -1542,7 +1542,8 @@ send_update(struct interface *ifp, int urgent,
                 struct babel_route *route = route_stream_next(routes);
                 if(route == NULL)
                     break;
-                buffer_update(ifp, route->src->prefix, route->src->plen);
+                buffer_update(ifp, route->src->prefix, route->src->plen,
+                              zeroes, O);
             }
             route_stream_done(routes);
         } else {
