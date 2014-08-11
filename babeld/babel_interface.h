@@ -135,7 +135,8 @@ int babel_interface_address_delete (int, struct zclient *, zebra_size_t);
 unsigned jitter(babel_interface_nfo *, int);
 unsigned update_jitter(babel_interface_nfo *babel_ifp, int urgent);
 /* return "true" if "address" is one of our ipv6 addresses */
-int is_interface_ll_address(struct interface *ifp, const unsigned char *address);
+int is_interface_ll_address(struct interface *ifp,
+                            const unsigned char *address);
 /* Send retraction to all, and reset all interfaces statistics. */
 void babel_interface_close_all(void);
 extern int babel_enable_if_config_write (struct vty *);
