@@ -1462,7 +1462,8 @@ schedule_update_flush(struct interface *ifp, int urgent)
 
 static void
 buffer_update(struct interface *ifp,
-              const unsigned char *prefix, unsigned char plen)
+              const unsigned char *prefix, unsigned char plen,
+              const unsigned char *src_prefix, unsigned char src_plen)
 {
     babel_interface_nfo *babel_ifp = babel_get_if_nfo(ifp);
     if(babel_ifp->num_buffered_updates > 0 &&
