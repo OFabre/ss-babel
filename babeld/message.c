@@ -307,7 +307,9 @@ babel_packet_examin(const unsigned char *packet, int packetlen)
             return 1;
         }
         /* not Pad1 */
-        if(type <= MESSAGE_MAX && tlv_min_length[type] && len < tlv_min_length[type]) {
+        if(type <= MESSAGE_MAX
+           && tlv_min_length[type]
+           && len < tlv_min_length[type]) {
             debugf(BABEL_DEBUG_COMMON,"Undersized %u TLV", type);
             return 1;
         }
@@ -384,7 +386,8 @@ parse_packet(const unsigned char *from, struct interface *ifp,
             unsigned short nonce, interval;
             DO_NTOHS(nonce, message + 4);
             DO_NTOHS(interval, message + 6);
-            debugf(BABEL_DEBUG_COMMON,"Received ack-req (%04X %d) from %s on %s.",
+            debugf(BABEL_DEBUG_COMMON,
+                   "Received ack-req (%04X %d) from %s on %s.",
                    nonce, interval, format_address(from), ifp->name);
             send_ack(neigh, nonce, interval);
         } else if(type == MESSAGE_ACK) {
@@ -421,7 +424,8 @@ parse_packet(const unsigned char *from, struct interface *ifp,
             DO_NTOHS(interval, message + 6);
             rc = network_address(message[2], message + 8, len - 6, address);
             if(rc < 0) goto fail;
-            debugf(BABEL_DEBUG_COMMON,"Received ihu %d (%d) from %s on %s for %s.",
+            debugf(BABEL_DEBUG_COMMON,
+                   "Received ihu %d (%d) from %s on %s for %s.",
                    txcost, interval,
                    format_address(from), ifp->name,
                    format_address(address));
@@ -512,7 +516,8 @@ parse_packet(const unsigned char *from, struct interface *ifp,
                 zlog_err("Received prefix with no router id.");
                 goto fail;
             }
-            debugf(BABEL_DEBUG_COMMON,"Received update%s%s for %s from %s on %s.",
+            debugf(BABEL_DEBUG_COMMON,
+                   "Received update%s%s for %s from %s on %s.",
                    (message[3] & 0x80) ? "/prefix" : "",
                    (message[3] & 0x40) ? "/id" : "",
                    format_prefix(prefix, plen),
@@ -596,7 +601,8 @@ parse_packet(const unsigned char *from, struct interface *ifp,
                                 message + 16, NULL, len - 14, prefix);
             if(rc < 0) goto fail;
             plen = message[3] + (message[2] == 1 ? 96 : 0);
-            debugf(BABEL_DEBUG_COMMON,"Received request (%d) for %s from %s on %s (%s, %d).",
+            debugf(BABEL_DEBUG_COMMON,
+                   "Received request (%d) for %s from %s on %s (%s, %d).",
                    message[6],
                    format_prefix(prefix, plen),
                    format_address(from), ifp->name,
@@ -710,7 +716,8 @@ parse_packet(const unsigned char *from, struct interface *ifp,
                 src_plen += 96;
             parsed += rc;
             if(ae == 0) {
-                debugf(BABEL_DEBUG_COMMON, "Received request for any from %s on %s.\n",
+                debugf(BABEL_DEBUG_COMMON,
+                       "Received request for any from %s on %s.\n",
                        format_address(from), ifp->name);
                 /* If a neighbour is requesting a full route dump from us,
                  we might as well send it an IHU. */
@@ -723,7 +730,8 @@ parse_packet(const unsigned char *from, struct interface *ifp,
                    babel_now.tv_sec - MAX(babel_ifp->hello_interval / 100, 1))
                     send_update(neigh->ifp, 0, NULL, 0, NULL, 0);
             } else {
-                debugf(BABEL_DEBUG_COMMON, "Received request for (%s from %s) from %s on %s.\n",
+                debugf(BABEL_DEBUG_COMMON,
+                       "Received request for (%s from %s) from %s on %s.\n",
                        format_prefix(prefix, plen),
                        format_prefix(src_prefix, src_plen),
                        format_address(from), ifp->name);
@@ -762,7 +770,8 @@ parse_packet(const unsigned char *from, struct interface *ifp,
             handle_request(neigh, prefix, plen, src_prefix, src_plen,
                            hopc, seqno, router_id);
         } else {
-            debugf(BABEL_DEBUG_COMMON,"Received unknown packet type %d from %s on %s.",
+            debugf(BABEL_DEBUG_COMMON,
+                   "Received unknown packet type %d from %s on %s.",
                    type, format_address(from), ifp->name);
         }
     done:
@@ -1343,7 +1352,7 @@ flushupdates(struct interface *ifp)
            with the same router-id together, with IPv6 going out before IPv4. */
 
         for(i = 0; i < n; i++) {
-            route = find_installed_route(b[i].prefix, b[i].plen, 
+            route = find_installed_route(b[i].prefix, b[i].plen,
                                          b[i].src_prefix, b[i].src_plen);
             if(route)
                 memcpy(b[i].id, route->src->id, 8);
@@ -1364,7 +1373,7 @@ flushupdates(struct interface *ifp)
                     continue;
             }
 
-            xroute = find_xroute(b[i].prefix, b[i].plen, 
+            xroute = find_xroute(b[i].prefix, b[i].plen,
                                  b[i].src_prefix, b[i].src_plen);
             route = find_installed_route(b[i].prefix, b[i].plen,
                                          b[i].src_prefix, b[i].src_plen);
@@ -1393,7 +1402,8 @@ flushupdates(struct interface *ifp)
 
                 if(metric < INFINITY)
                     satisfy_request(route->src->prefix, route->src->plen,
-                                    route->src->src_prefix, route->src->src_plen,
+                                    route->src->src_prefix,
+                                    route->src->src_plen,
                                     seqno, route->src->id, ifp);
                 if((babel_ifp->flags & BABEL_IF_SPLIT_HORIZON) &&
                    route->neigh->ifp == ifp)
@@ -1550,7 +1560,8 @@ send_update_resend(struct interface *ifp,
     assert(prefix != NULL);
 
     send_update(ifp, 1, prefix, plen, src_prefix, src_plen);
-    record_resend(RESEND_UPDATE, prefix, plen, src_prefix, src_plen, 0, 0, NULL, resend_delay);
+    record_resend(RESEND_UPDATE, prefix, plen, src_prefix, src_plen,
+                  0, NULL, NULL, resend_delay);
 }
 
 void
@@ -1763,9 +1774,11 @@ send_request(struct interface *ifp,
         return;
 
     if(!prefix)
-        debugf(BABEL_DEBUG_COMMON, "sending request to %s for any.\n", ifp->name);
+        debugf(BABEL_DEBUG_COMMON, "sending request to %s for any.\n",
+               ifp->name);
     else
-        debugf(BABEL_DEBUG_COMMON, "sending request to %s for %s from %s.\n", ifp->name,
+        debugf(BABEL_DEBUG_COMMON, "sending request to %s for %s from %s.\n",
+               ifp->name,
                format_prefix(prefix, plen),
                format_prefix(src_prefix, src_plen));
     v4 = plen >= 96 && v4mapped(prefix);
@@ -1918,7 +1931,8 @@ send_multihop_request(struct interface *ifp,
 void
 send_unicast_multihop_request(struct neighbour *neigh,
                               const unsigned char *prefix, unsigned char plen,
-                              const unsigned char *src_prefix, unsigned char src_plen,
+                              const unsigned char *src_prefix,
+                              unsigned char src_plen,
                               unsigned short seqno, const unsigned char *id,
                               unsigned short hop_count)
 {
@@ -1927,7 +1941,8 @@ send_unicast_multihop_request(struct neighbour *neigh,
     /* Make sure any buffered updates go out before this request. */
     flushupdates(neigh->ifp);
 
-    debugf(BABEL_DEBUG_COMMON,"Sending multi-hop request to %s for %s (%d hops).",
+    debugf(BABEL_DEBUG_COMMON,
+           "Sending multi-hop request to %s for %s (%d hops).",
            format_address(neigh->address),
            format_prefix(prefix, plen), hop_count);
     v4 = plen >= 96 && v4mapped(prefix);
@@ -1972,9 +1987,11 @@ send_request_resend(struct neighbour *neigh,
                     unsigned short seqno, unsigned char *id)
 {
     if(neigh)
-        send_unicast_multihop_request(neigh, prefix, plen, src_prefix, src_plen, seqno, id, 127);
+        send_unicast_multihop_request(neigh, prefix, plen, src_prefix, src_plen,
+                                      seqno, id, 127);
     else
-        send_multihop_request(NULL, prefix, plen, src_prefix, src_plen, seqno, id, 127);
+        send_multihop_request(NULL, prefix, plen, src_prefix, src_plen,
+                              seqno, id, 127);
 
     record_resend(RESEND_REQUEST, prefix, plen, src_prefix, src_plen, seqno, id,
                   neigh ? neigh->ifp : NULL, resend_delay);
@@ -2024,7 +2041,8 @@ handle_request(struct neighbour *neigh, const unsigned char *prefix,
         return;
     }
 
-    if(request_redundant(neigh->ifp, prefix, plen, src_prefix, src_plen, seqno, id))
+    if(request_redundant(neigh->ifp, prefix, plen, src_prefix, src_plen,
+                         seqno, id))
         return;
 
     /* Let's try to forward this request. */
@@ -2036,7 +2054,8 @@ handle_request(struct neighbour *neigh, const unsigned char *prefix,
            find a different neighbour to forward the request to. */
         struct babel_route *other_route;
 
-        other_route = find_best_route(prefix, plen, src_prefix, src_plen, 0, neigh);
+        other_route = find_best_route(prefix, plen, src_prefix, src_plen,
+                                      0, neigh);
         if(other_route && route_metric(other_route) < INFINITY)
             successor = other_route->neigh;
     }

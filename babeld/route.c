@@ -499,7 +499,8 @@ switch_routes(struct babel_route *old, struct babel_route *new)
     old->installed = 0;
     new->installed = 1;
     move_installed_route(new, find_route_slot(new->src->prefix, new->src->plen,
-                                              new->src->src_prefix, new->src->src_plen,
+                                              new->src->src_prefix,
+                                              new->src->src_plen,
                                               NULL));
 }
 
@@ -754,7 +755,8 @@ update_route_metric(struct babel_route *route)
         struct neighbour *neigh = route->neigh;
         int add_metric = input_filter(route->src->id,
                                       route->src->prefix, route->src->plen,
-                                      route->src->src_prefix, route->src->src_plen,
+                                      route->src->src_prefix,
+                                      route->src->src_plen,
                                       neigh->address,
                                       neigh->ifp->ifindex);
         change_route_metric(route, route->refmetric,
@@ -836,7 +838,8 @@ update_route(const unsigned char *router_id,
         /* Avoid scanning the source table. */
         src = route->src;
     else
-        src = find_source(router_id, prefix, plen, src_prefix, src_plen, 1, seqno);
+        src = find_source(router_id, prefix, plen,
+                          src_prefix, src_plen, 1, seqno);
 
     if(src == NULL)
         return NULL;
@@ -857,7 +860,8 @@ update_route(const unsigned char *router_id,
            in a timely manner.  If the source remains the same, we ignore
            the update. */
         if(!feasible && route->installed) {
-            debugf(BABEL_DEBUG_COMMON,"Unfeasible update for installed route to %s "
+            debugf(BABEL_DEBUG_COMMON,
+                   "Unfeasible update for installed route to %s "
                    "(%s %d %d -> %s %d %d).",
                    format_prefix(src->prefix, src->plen),
                    format_eui64(route->src->id),
@@ -986,7 +990,8 @@ consider_route(struct babel_route *route)
         return;
 
     installed = find_installed_route(route->src->prefix, route->src->plen,
-                                     route->src->src_prefix, route->src->src_plen);
+                                     route->src->src_prefix,
+                                     route->src->src_plen);
 
     if(installed == NULL)
         goto install;
@@ -1108,7 +1113,8 @@ route_changed(struct babel_route *route,
         /* Do this unconditionally -- microoptimisation is not worth it. */
         better_route =
             find_best_route(route->src->prefix, route->src->plen,
-                            route->src->src_prefix, route->src->src_plen, 1, NULL);
+                            route->src->src_prefix, route->src->src_plen,
+                            1, NULL);
         if(better_route && route_metric(better_route) < route_metric(route))
             consider_route(better_route);
     }

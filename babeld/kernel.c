@@ -106,13 +106,17 @@ kernel_route(int operation, const unsigned char *pref, unsigned short plen,
     switch (operation) {
         case ROUTE_ADD:
             return ipv4 ?
-                   kernel_route_v4(1, pref, plen, src_prefix, src_plen, gate, ifindex, metric):
-                   kernel_route_v6(1, pref, plen, src_prefix, src_plen, gate, ifindex, metric);
+                   kernel_route_v4(1, pref, plen,
+                       src_prefix, src_plen, gate, ifindex, metric):
+                   kernel_route_v6(1, pref, plen,
+                       src_prefix, src_plen, gate, ifindex, metric);
             break;
         case ROUTE_FLUSH:
             return ipv4 ?
-                   kernel_route_v4(0, pref, plen, src_prefix, src_plen, gate, ifindex, metric):
-                   kernel_route_v6(0, pref, plen, src_prefix, src_plen, gate, ifindex, metric);
+                   kernel_route_v4(0, pref, plen,
+                       src_prefix, src_plen, gate, ifindex, metric):
+                   kernel_route_v6(0, pref, plen,
+                       src_prefix, src_plen, gate, ifindex, metric);
             break;
         case ROUTE_MODIFY:
             if(newmetric == metric && memcmp(newgate, gate, 16) == 0 &&
@@ -120,15 +124,19 @@ kernel_route(int operation, const unsigned char *pref, unsigned short plen,
                 return 0;
             debugf(BABEL_DEBUG_ROUTE, "Modify route: delete old; add new.");
             rc = ipv4 ?
-                kernel_route_v4(0, pref, plen, src_prefix, src_plen, gate, ifindex, metric):
-                kernel_route_v6(0, pref, plen, src_prefix, src_plen, gate, ifindex, metric);
+                kernel_route_v4(0, pref, plen,
+                    src_prefix, src_plen, gate, ifindex, metric):
+                kernel_route_v6(0, pref, plen,
+                    src_prefix, src_plen, gate, ifindex, metric);
 
             if (rc < 0)
                 return -1;
 
             rc = ipv4 ?
-                kernel_route_v4(1, pref, plen, src_prefix, src_plen, newgate, newifindex, newmetric):
-                kernel_route_v6(1, pref, plen, src_prefix, src_plen, newgate, newifindex, newmetric);
+                kernel_route_v4(1, pref, plen,
+                    src_prefix, src_plen, newgate, newifindex, newmetric):
+                kernel_route_v6(1, pref, plen,
+                    src_prefix, src_plen, newgate, newifindex, newmetric);
 
             return rc;
             break;
@@ -255,7 +263,8 @@ kernel_route_v6(int add, const unsigned char *pref, unsigned short plen,
            add ? "adding" : "removing" );
     return zapi_ipv6_route (add ? ZEBRA_IPV6_ROUTE_ADD :
                                   ZEBRA_IPV6_ROUTE_DELETE,
-                            zclient, &quagga_prefix, src_plen != 0 ? &source_prefix : NULL, &api);
+                            zclient, &quagga_prefix,
+                            src_plen != 0 ? &source_prefix : NULL, &api);
 }
 
 int

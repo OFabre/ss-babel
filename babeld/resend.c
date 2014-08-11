@@ -85,7 +85,8 @@ find_request(const unsigned char *prefix, unsigned char plen,
              const unsigned char *src_prefix, unsigned char src_plen,
              struct resend **previous_return)
 {
-    return find_resend(RESEND_REQUEST, prefix, plen, src_prefix, src_plen, previous_return);
+    return find_resend(RESEND_REQUEST, prefix, plen, src_prefix, src_plen,
+                       previous_return);
 }
 
 int
@@ -98,9 +99,13 @@ record_resend(int kind, const unsigned char *prefix, unsigned char plen,
     unsigned int ifindex = ifp ? ifp->ifindex : 0;
 
     if((kind == RESEND_REQUEST &&
-        input_filter(NULL, prefix, plen, src_prefix, src_plen, NULL, ifindex) >= INFINITY) ||
+        input_filter(NULL, prefix, plen, src_prefix, src_plen, NULL,
+                     ifindex) >=
+        INFINITY) ||
        (kind == RESEND_UPDATE &&
-        output_filter(NULL, prefix, plen, src_prefix, src_plen, ifindex) >= INFINITY))
+        output_filter(NULL, prefix, plen, src_prefix, src_plen,
+                      ifindex) >=
+        INFINITY))
         return 0;
 
     if(delay >= 0xFFFF)

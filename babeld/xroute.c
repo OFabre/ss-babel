@@ -34,8 +34,10 @@ THE SOFTWARE.
 #include "util.h"
 #include "babel_interface.h"
 
-static int xroute_add_new_route(const unsigned char prefix[16], const unsigned char plen,
-                                const unsigned char src_prefix[16], const unsigned char src_plen,
+static int xroute_add_new_route(const unsigned char prefix[16],
+                                const unsigned char plen,
+                                const unsigned char src_prefix[16],
+                                const unsigned char src_plen,
                                 unsigned short metric, unsigned int ifindex,
                                 int proto, int send_updates);
 
@@ -231,17 +233,21 @@ xroute_stream_done(struct xroute_stream *stream)
 
 /* add an xroute, verifying some conditions; return 0 if there is no changes */
 static int
-xroute_add_new_route(const unsigned char prefix[16], const unsigned char plen,
-                     const unsigned char src_prefix[16], const unsigned char src_plen,
+xroute_add_new_route(const unsigned char prefix[16],
+                     const unsigned char plen,
+                     const unsigned char src_prefix[16],
+                     const unsigned char src_plen,
                      unsigned short metric, unsigned int ifindex,
                      int proto, int send_updates)
 {
     int rc;
     if(martian_prefix(prefix, plen))
         return 0;
-    metric = redistribute_filter(prefix, plen, src_prefix, src_plen, ifindex, proto);
+    metric = redistribute_filter(prefix, plen,
+                                 src_prefix, src_plen, ifindex, proto);
     if(metric < INFINITY) {
-        rc = add_xroute(prefix, plen, src_prefix, src_plen, metric, ifindex, proto);
+        rc = add_xroute(prefix, plen,
+                        src_prefix, src_plen, metric, ifindex, proto);
         if(rc > 0) {
             struct babel_route *route;
             route = find_installed_route(prefix, plen, src_prefix, src_plen);
