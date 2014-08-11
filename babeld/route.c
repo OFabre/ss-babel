@@ -687,7 +687,7 @@ struct babel_route *
 find_best_route(const unsigned char *prefix, unsigned char plen, int feasible,
                 struct neighbour *exclude)
 {
-    struct babel_route *route = NULL, *r = NULL;
+    struct babel_route *route, *r;
     int i = find_route_slot(prefix, plen, NULL);
 
     if(i < 0)
